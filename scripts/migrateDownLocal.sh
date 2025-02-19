@@ -5,4 +5,5 @@ if [ -f .env ]; then
 fi
 
 cd repositories/sql/schema
-goose turso $DATABASE_URL up
+# goose turso $DATABASE_URL up
+goose sqlite $DATABASE_URL down

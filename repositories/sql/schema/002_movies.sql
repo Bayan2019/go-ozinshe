@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE movies(
-    id BIGSERIAL PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL DEFAULT '',
     description TEXT NOT NULL DEFAULT '',
     release_year INT NOT NULL DEFAULT 0,

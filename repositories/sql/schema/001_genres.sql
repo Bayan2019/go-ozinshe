@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE genres(
-    id SERIAL PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL UNIQUE
 );
 
