@@ -18,7 +18,7 @@ WHERE id = ?
 
 type ChangePasswordParams struct {
 	PasswordHash string
-	ID           interface{}
+	ID           int64
 }
 
 func (q *Queries) ChangePassword(ctx context.Context, arg ChangePasswordParams) error {
@@ -38,9 +38,9 @@ type CreateUserParams struct {
 	PasswordHash string
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (interface{}, error) {
+func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createUser, arg.Name, arg.Email, arg.PasswordHash)
-	var id interface{}
+	var id int64
 	err := row.Scan(&id)
 	return id, err
 }
@@ -50,7 +50,7 @@ const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users WHERE id = ?
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id interface{}) error {
+func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteUser, id)
 	return err
 }
@@ -77,7 +77,7 @@ const getUserById = `-- name: GetUserById :one
 SELECT id, name, email, password_hash FROM users WHERE id = ?
 `
 
-func (q *Queries) GetUserById(ctx context.Context, id interface{}) (User, error) {
+func (q *Queries) GetUserById(ctx context.Context, id int64) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserById, id)
 	var i User
 	err := row.Scan(
@@ -133,7 +133,7 @@ WHERE id = ?
 type UpdateUserParams struct {
 	Name  string
 	Email string
-	ID    interface{}
+	ID    int64
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {

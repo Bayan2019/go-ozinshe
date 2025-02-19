@@ -28,7 +28,7 @@ const deleteGenre = `-- name: DeleteGenre :exec
 DELETE FROM genres WHERE id = ?
 `
 
-func (q *Queries) DeleteGenre(ctx context.Context, id interface{}) error {
+func (q *Queries) DeleteGenre(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteGenre, id)
 	return err
 }
@@ -69,7 +69,7 @@ const getGenreById = `-- name: GetGenreById :one
 SELECT id, title FROM genres WHERE id = ?
 `
 
-func (q *Queries) GetGenreById(ctx context.Context, id interface{}) (Genre, error) {
+func (q *Queries) GetGenreById(ctx context.Context, id int64) (Genre, error) {
 	row := q.db.QueryRowContext(ctx, getGenreById, id)
 	var i Genre
 	err := row.Scan(&i.ID, &i.Title)
@@ -113,7 +113,7 @@ RETURNING id, title
 
 type UpdateGenreParams struct {
 	Title string
-	ID    interface{}
+	ID    int64
 }
 
 func (q *Queries) UpdateGenre(ctx context.Context, arg UpdateGenreParams) (Genre, error) {

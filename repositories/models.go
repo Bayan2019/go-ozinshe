@@ -9,12 +9,12 @@ import (
 )
 
 type Genre struct {
-	ID    interface{}
+	ID    int64
 	Title string
 }
 
 type Movie struct {
-	ID          interface{}
+	ID          int64
 	Title       string
 	Description string
 	ReleaseYear int64
@@ -31,7 +31,7 @@ type MoviesGenre struct {
 }
 
 type User struct {
-	ID           interface{}
+	ID           int64
 	Name         string
 	Email        string
 	PasswordHash string

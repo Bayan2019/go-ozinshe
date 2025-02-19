@@ -54,7 +54,7 @@ const deleteMovie = `-- name: DeleteMovie :exec
 DELETE FROM movies WHERE id = ?
 `
 
-func (q *Queries) DeleteMovie(ctx context.Context, id interface{}) error {
+func (q *Queries) DeleteMovie(ctx context.Context, id int64) error {
 	_, err := q.db.ExecContext(ctx, deleteMovie, id)
 	return err
 }
@@ -64,7 +64,7 @@ const getMovieById = `-- name: GetMovieById :one
 SELECT id, title, description, release_year, director, rating, is_watched, trailer_url, poster_url FROM movies WHERE id = ?
 `
 
-func (q *Queries) GetMovieById(ctx context.Context, id interface{}) (Movie, error) {
+func (q *Queries) GetMovieById(ctx context.Context, id int64) (Movie, error) {
 	row := q.db.QueryRowContext(ctx, getMovieById, id)
 	var i Movie
 	err := row.Scan(
@@ -142,7 +142,7 @@ type UpdateMovieParams struct {
 	IsWatched   bool
 	TrailerUrl  string
 	PosterUrl   string
-	ID          interface{}
+	ID          int64
 }
 
 func (q *Queries) UpdateMovie(ctx context.Context, arg UpdateMovieParams) (Movie, error) {
@@ -181,7 +181,7 @@ WHERE id = ?
 
 type UpdateMovieIsWatchedParams struct {
 	IsWatched bool
-	ID        interface{}
+	ID        int64
 }
 
 func (q *Queries) UpdateMovieIsWatched(ctx context.Context, arg UpdateMovieIsWatchedParams) error {
@@ -198,7 +198,7 @@ WHERE id = ?
 
 type UpdateMovieRatingParams struct {
 	Rating int64
-	ID     interface{}
+	ID     int64
 }
 
 func (q *Queries) UpdateMovieRating(ctx context.Context, arg UpdateMovieRatingParams) error {
