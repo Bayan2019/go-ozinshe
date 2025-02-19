@@ -1,0 +1,20 @@
+services:
+  api:
+    image: bayan2019/ozinshe-go
+    container_name: ozinshe-go
+    restart: always
+    environment:
+      PORT: "8081"
+      DIR_IMAGES: "/images"
+      DIR_VIDEOS: "/videos"
+    build:
+      dockerfile: Dockerfile
+    volumes:
+      - images:/images
+      - videos:/videos
+    ports:
+      "8081:8080"
+volumes:
+  images:
+  videos:
+    
