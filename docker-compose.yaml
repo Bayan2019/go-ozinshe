@@ -7,6 +7,7 @@ services:
       PORT: "8081"
       DIR_IMAGES: "/images"
       DIR_VIDEOS: "/videos"
+      # DATABASE_URL: ${{ secrets.DATABASE_URL }}
     build:
       dockerfile: Dockerfile
     volumes:
