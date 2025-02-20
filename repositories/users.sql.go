@@ -7,6 +7,7 @@ package repositories
 
 import (
 	"context"
+	"time"
 )
 
 const changePassword = `-- name: ChangePassword :exec
@@ -57,7 +58,7 @@ func (q *Queries) DeleteUser(ctx context.Context, id int64) error {
 
 const getUserByEmail = `-- name: GetUserByEmail :one
 
-SELECT id, name, email, password_hash FROM users WHERE email = ?
+SELECT id, created_at, updated_at, name, email, password_hash, date_of_birth, phone FROM users WHERE email = ?
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -65,16 +66,20 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 	var i User
 	err := row.Scan(
 		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.Name,
 		&i.Email,
 		&i.PasswordHash,
+		&i.DateOfBirth,
+		&i.Phone,
 	)
 	return i, err
 }
 
 const getUserById = `-- name: GetUserById :one
 
-SELECT id, name, email, password_hash FROM users WHERE id = ?
+SELECT id, created_at, updated_at, name, email, password_hash, date_of_birth, phone FROM users WHERE id = ?
 `
 
 func (q *Queries) GetUserById(ctx context.Context, id int64) (User, error) {
@@ -82,16 +87,20 @@ func (q *Queries) GetUserById(ctx context.Context, id int64) (User, error) {
 	var i User
 	err := row.Scan(
 		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.Name,
 		&i.Email,
 		&i.PasswordHash,
+		&i.DateOfBirth,
+		&i.Phone,
 	)
 	return i, err
 }
 
 const getUsers = `-- name: GetUsers :many
 
-SELECT id, name, email, password_hash FROM users
+SELECT id, created_at, updated_at, name, email, password_hash, date_of_birth, phone FROM users
 `
 
 func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
@@ -105,9 +114,54 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 		var i User
 		if err := rows.Scan(
 			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.Name,
 			&i.Email,
 			&i.PasswordHash,
+			&i.DateOfBirth,
+			&i.Phone,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getUsersOfRole = `-- name: GetUsersOfRole :many
+
+SELECT u.id, u.created_at, u.updated_at, u.name, u.email, u.password_hash, u.date_of_birth, u.phone
+FROM users AS u
+JOIN users_roles AS ur
+ON u.id = ur.user_id
+WHERE ur.role_id = ?
+`
+
+func (q *Queries) GetUsersOfRole(ctx context.Context, roleID int64) ([]User, error) {
+	rows, err := q.db.QueryContext(ctx, getUsersOfRole, roleID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []User
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Name,
+			&i.Email,
+			&i.PasswordHash,
+			&i.DateOfBirth,
+			&i.Phone,
 		); err != nil {
 			return nil, err
 		}
@@ -125,18 +179,29 @@ func (q *Queries) GetUsers(ctx context.Context) ([]User, error) {
 const updateUser = `-- name: UpdateUser :exec
 
 UPDATE users
-SET name = ?,
-    email = ?
+SET updated_at = CURRENT_TIMESTAMP,
+    name = ?,
+    email = ?,
+    date_of_birth = ?,
+    phone = ?
 WHERE id = ?
 `
 
 type UpdateUserParams struct {
-	Name  string
-	Email string
-	ID    int64
+	Name        string
+	Email       string
+	DateOfBirth time.Time
+	Phone       string
+	ID          int64
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
-	_, err := q.db.ExecContext(ctx, updateUser, arg.Name, arg.Email, arg.ID)
+	_, err := q.db.ExecContext(ctx, updateUser,
+		arg.Name,
+		arg.Email,
+		arg.DateOfBirth,
+		arg.Phone,
+		arg.ID,
+	)
 	return err
 }

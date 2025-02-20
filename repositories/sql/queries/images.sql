@@ -1,6 +1,6 @@
 -- name: AddImage2Movie :exec
-INSERT INTO images(project_id)
-VALUES (?);
+INSERT INTO images(id, project_id)
+VALUES (?, ?);
 --
 
 -- name: GetImage :one
@@ -24,6 +24,6 @@ SET updated_at = CURRENT_DATE,
 WHERE id = ?;
 --
 
--- name: DeleteVideo :exec
+-- name: DeleteImage :exec
 DELETE FROM images WHERE id = ?;
 --

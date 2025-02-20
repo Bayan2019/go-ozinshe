@@ -9,52 +9,32 @@ import (
 	"context"
 )
 
-const addMovie2Watchlist = `-- name: AddMovie2Watchlist :exec
-INSERT INTO watchlist(movie_id, added_at)
-VALUES (?, NOW())
+const addProject2Watchlist = `-- name: AddProject2Watchlist :exec
+INSERT INTO watchlist(user_id, project_id)
+VALUES (?, ?)
 `
 
-func (q *Queries) AddMovie2Watchlist(ctx context.Context, movieID int64) error {
-	_, err := q.db.ExecContext(ctx, addMovie2Watchlist, movieID)
+type AddProject2WatchlistParams struct {
+	UserID    int64
+	ProjectID int64
+}
+
+func (q *Queries) AddProject2Watchlist(ctx context.Context, arg AddProject2WatchlistParams) error {
+	_, err := q.db.ExecContext(ctx, addProject2Watchlist, arg.UserID, arg.ProjectID)
 	return err
 }
 
-const deleteMovieFromWatchlist = `-- name: DeleteMovieFromWatchlist :exec
+const deleteProjectFromWatchlist = `-- name: DeleteProjectFromWatchlist :exec
 
-DELETE FROM watchlist WHERE movie_id = ?
+DELETE FROM watchlist WHERE user_id = ? AND project_id = ?
 `
 
-func (q *Queries) DeleteMovieFromWatchlist(ctx context.Context, movieID int64) error {
-	_, err := q.db.ExecContext(ctx, deleteMovieFromWatchlist, movieID)
-	return err
+type DeleteProjectFromWatchlistParams struct {
+	UserID    int64
+	ProjectID int64
 }
 
-const getWatchlistMovies = `-- name: GetWatchlistMovies :many
-
-SELECT movie_id
-FROM watchlist
-ORDER BY added_at
-`
-
-func (q *Queries) GetWatchlistMovies(ctx context.Context) ([]int64, error) {
-	rows, err := q.db.QueryContext(ctx, getWatchlistMovies)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []int64
-	for rows.Next() {
-		var movie_id int64
-		if err := rows.Scan(&movie_id); err != nil {
-			return nil, err
-		}
-		items = append(items, movie_id)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) DeleteProjectFromWatchlist(ctx context.Context, arg DeleteProjectFromWatchlistParams) error {
+	_, err := q.db.ExecContext(ctx, deleteProjectFromWatchlist, arg.UserID, arg.ProjectID)
+	return err
 }

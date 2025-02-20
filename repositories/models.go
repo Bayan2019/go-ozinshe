@@ -5,39 +5,99 @@
 package repositories
 
 import (
+	"database/sql"
 	"time"
 )
+
+type AgeCategory struct {
+	ID    int64
+	Title string
+}
 
 type Genre struct {
 	ID    int64
 	Title string
 }
 
-type Movie struct {
-	ID          int64
-	Title       string
-	Description string
-	ReleaseYear int64
-	Director    string
-	Rating      int64
-	IsWatched   bool
-	TrailerUrl  string
-	PosterUrl   string
+type Image struct {
+	ID        string
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	ProjectID int64
 }
 
-type MoviesGenre struct {
-	MovieID int64
-	GenreID int64
+type Permission struct {
+	ID    int64
+	Title string
+}
+
+type Project struct {
+	ID             int64
+	CreatedAt      sql.NullTime
+	UpdatedAt      sql.NullTime
+	Title          string
+	Description    string
+	TypeID         int64
+	DurationInMins int64
+	ReleaseYear    int64
+	Director       string
+	Producer       string
+}
+
+type ProjectsAgeCategory struct {
+	ProjectID     int64
+	AgeCategoryID int64
+}
+
+type ProjectsGenre struct {
+	ProjectID int64
+	GenreID   int64
+}
+
+type Role struct {
+	ID            int64
+	Title         string
+	Projects      int64
+	Genres        int64
+	AgeCategories int64
+	Types         int64
+	Users         int64
+	Roles         int64
+}
+
+type Type struct {
+	ID    int64
+	Title string
 }
 
 type User struct {
 	ID           int64
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 	Name         string
 	Email        string
 	PasswordHash string
+	DateOfBirth  time.Time
+	Phone        string
+}
+
+type UsersRole struct {
+	AddedAt time.Time
+	UserID  int64
+	RoleID  int64
+}
+
+type Video struct {
+	ID        string
+	CreatedAt sql.NullTime
+	UpdatedAt sql.NullTime
+	ProjectID int64
+	Season    int64
+	Serie     int64
 }
 
 type Watchlist struct {
-	MovieID int64
-	AddedAt time.Time
+	AddedAt   time.Time
+	UserID    int64
+	ProjectID int64
 }

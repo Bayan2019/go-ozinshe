@@ -1,17 +1,17 @@
 -- name: AddVideo2Movie :exec
-INSERT INTO videos(project_id)
-VALUES (?);
+INSERT INTO videos(id, project_id)
+VALUES (?, ?);
 --
 
 -- name: AddVideo2Series :exec
-INSERT INTO videos(project_id, season, serie)
-VALUES (?, ?, ?);
+INSERT INTO videos(id, project_id, season, serie)
+VALUES (?, ?, ?, ?);
 --
 
 -- name: GetVideo :one
 SELECT * FROM videos
-WHERE project_id = ?,
-    season = ?,
+WHERE project_id = ? AND
+    season = ? AND
     serie = ?;
 --
 

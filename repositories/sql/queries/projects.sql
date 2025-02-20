@@ -35,6 +35,6 @@ WHERE id = ?
 RETURNING *;
 --
 
--- name: DeleteMovie :exec
+-- name: DeleteProject :exec
 DELETE FROM projects WHERE id = ?;
 --

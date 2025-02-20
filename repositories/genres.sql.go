@@ -13,14 +13,14 @@ const createGenre = `-- name: CreateGenre :one
 
 INSERT INTO genres(title)
 VALUES (?)
-RETURNING id, title
+RETURNING id
 `
 
-func (q *Queries) CreateGenre(ctx context.Context, title string) (Genre, error) {
+func (q *Queries) CreateGenre(ctx context.Context, title string) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createGenre, title)
-	var i Genre
-	err := row.Scan(&i.ID, &i.Title)
-	return i, err
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const deleteGenre = `-- name: DeleteGenre :exec
@@ -33,16 +33,16 @@ func (q *Queries) DeleteGenre(ctx context.Context, id int64) error {
 	return err
 }
 
-const getAllGenresOfMovie = `-- name: GetAllGenresOfMovie :many
+const getAllGenresOfProject = `-- name: GetAllGenresOfProject :many
 
 SELECT g.id, g.title FROM genres AS g
-JOIN movies_genres AS mg
+JOIN projects_genres AS mg
 ON g.id = mg.genre_id
-WHERE mg.movie_id = ?
+WHERE mg.project_id = ?
 `
 
-func (q *Queries) GetAllGenresOfMovie(ctx context.Context, movieID int64) ([]Genre, error) {
-	rows, err := q.db.QueryContext(ctx, getAllGenresOfMovie, movieID)
+func (q *Queries) GetAllGenresOfProject(ctx context.Context, projectID int64) ([]Genre, error) {
+	rows, err := q.db.QueryContext(ctx, getAllGenresOfProject, projectID)
 	if err != nil {
 		return nil, err
 	}
@@ -103,12 +103,11 @@ func (q *Queries) GetGenres(ctx context.Context) ([]Genre, error) {
 	return items, nil
 }
 
-const updateGenre = `-- name: UpdateGenre :one
+const updateGenre = `-- name: UpdateGenre :exec
 
 UPDATE genres 
 SET title = ? 
 WHERE id = ?
-RETURNING id, title
 `
 
 type UpdateGenreParams struct {
@@ -116,9 +115,7 @@ type UpdateGenreParams struct {
 	ID    int64
 }
 
-func (q *Queries) UpdateGenre(ctx context.Context, arg UpdateGenreParams) (Genre, error) {
-	row := q.db.QueryRowContext(ctx, updateGenre, arg.Title, arg.ID)
-	var i Genre
-	err := row.Scan(&i.ID, &i.Title)
-	return i, err
+func (q *Queries) UpdateGenre(ctx context.Context, arg UpdateGenreParams) error {
+	_, err := q.db.ExecContext(ctx, updateGenre, arg.Title, arg.ID)
+	return err
 }

@@ -12,7 +12,7 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING id;
 --
 
--- name: UpdateType :exec
+-- name: UpdateRole :exec
 UPDATE roles 
 SET title = ?,
     projects = ?,
@@ -32,6 +32,6 @@ ON r.id = ur.role_id
 WHERE ur.user_id = ?;
 --
 
--- name: DeleteType :exec
+-- name: DeleteRole :exec
 DELETE FROM roles WHERE id = ?;
 --
