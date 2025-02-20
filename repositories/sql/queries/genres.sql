@@ -9,23 +9,22 @@ SELECT * FROM genres WHERE id = ?;
 -- name: CreateGenre :one
 INSERT INTO genres(title)
 VALUES (?)
-RETURNING *;
+RETURNING id;
 --
 
--- name: UpdateGenre :one
+-- name: UpdateGenre :exec
 UPDATE genres 
 SET title = ? 
-WHERE id = ?
-RETURNING *;
+WHERE id = ?;
 --
 
 -- name: DeleteGenre :exec
 DELETE FROM genres WHERE id = ?;
 --
 
--- name: GetAllGenresOfMovie :many
+-- name: GetAllGenresOfProject :many
 SELECT g.* FROM genres AS g
-JOIN movies_genres AS mg
+JOIN projects_genres AS mg
 ON g.id = mg.genre_id
-WHERE mg.movie_id = ?;
+WHERE mg.project_id = ?;
 --

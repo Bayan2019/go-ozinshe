@@ -1,0 +1,14 @@
+-- +goose Up
+CREATE TABLE users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password_hash TEXT NOT NULL,
+    date_of_birth DATE NOT NULL DEFAULT CURRENT_DATE,
+    phone TEXT NOT NULL DEFAULT '+0(000)000-00-00'
+);
+
+-- +goose Down
+DROP TABLE users;

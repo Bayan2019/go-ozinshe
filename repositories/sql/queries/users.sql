@@ -14,8 +14,11 @@ SELECT * FROM users WHERE id = ?;
 
 -- name: UpdateUser :exec
 UPDATE users
-SET name = ?,
-    email = ?
+SET updated_at = CURRENT_TIMESTAMP,
+    name = ?,
+    email = ?,
+    date_of_birth = ?,
+    phone = ?
 WHERE id = ?;
 --
 
