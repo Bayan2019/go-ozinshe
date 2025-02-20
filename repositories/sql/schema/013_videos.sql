@@ -5,7 +5,8 @@ CREATE TABLE videos(
 	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     project_id INTEGER NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
     season INT NOT NULL DEFAULT 0,
-    serie INT NOT NULL DEFAULT 0
+    serie INT NOT NULL DEFAULT 0,
+    UNIQUE(project_id, season, serie)
 );
 
 -- +goose Down

@@ -8,8 +8,20 @@ RETURNING id;
 SELECT * FROM users;
 --
 
+-- name: GetUsersOfRole :many
+SELECT u.*
+FROM users AS u
+JOIN users_roles AS ur
+ON u.id = ur.user_id
+WHERE ur.role_id = ?;
+--
+
 -- name: GetUserById :one
 SELECT * FROM users WHERE id = ?;
+--
+
+-- name: GetUserByEmail :one
+SELECT * FROM users WHERE email = ?;
 --
 
 -- name: UpdateUser :exec
@@ -30,8 +42,4 @@ WHERE id = ?;
 
 -- name: DeleteUser :exec
 DELETE FROM users WHERE id = ?;
---
-
--- name: GetUserByEmail :one
-SELECT * FROM users WHERE email = ?;
 --

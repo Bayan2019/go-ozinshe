@@ -12,6 +12,15 @@ VALUES (?, ?, ?, ?, ?, ?, ?)
 RETURNING *;
 --
 
+-- name: GetWatchlistProjects :many
+SELECT p.*
+FROM projects AS p
+JOIN watchlist AS w
+ON p.id = w.project_id
+WHERE w.user_id = ?
+ORDER BY added_at;
+--
+
 -- name: UpdateProjects :one
 UPDATE projects 
 SET updated_at = CURRENT_TIMESTAMP,

@@ -1,14 +1,8 @@
--- name: AddMovie2Watchlist :exec
-INSERT INTO watchlist(movie_id, added_at)
-VALUES (?, NOW());
+-- name: AddProject2Watchlist :exec
+INSERT INTO watchlist(user_id, project_id)
+VALUES (?, ?);
 --
 
--- name: GetWatchlistMovies :many
-SELECT movie_id
-FROM watchlist
-ORDER BY added_at;
---
-
--- name: DeleteMovieFromWatchlist :exec
-DELETE FROM watchlist WHERE movie_id = ?;
+-- name: DeleteProjectFromWatchlist :exec
+DELETE FROM watchlist WHERE user_id = ? AND project_id = ?;
 --
