@@ -1,4 +1,4 @@
-[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://go-ozinshe.onrender.com)
 
 
 # Ozinshe
@@ -8,4 +8,4 @@
 
 # Resources
 
-1. [svt to png](https://svgtopng.com/)
+1. [svg to png](https://svgtopng.com/)
