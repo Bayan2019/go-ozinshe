@@ -1,5 +1,6 @@
 .env
 ozinshe-go
 files/
+notes/
 ozinshe.db
 ozinshe.db.ipynb
