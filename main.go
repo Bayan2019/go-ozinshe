@@ -1,13 +1,15 @@
 package main
 
 import (
+	"embed"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/Bayan2019/go-ozinshe/configuration"
+	"github.com/Bayan2019/go-ozinshe/views"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
@@ -18,6 +20,9 @@ import (
 	_ "github.com/Bayan2019/go-ozinshe/docs"
 	// _ "github.com/mattn/go-sqlite3"
 )
+
+//go:embed static/*
+var staticFiles embed.FS
 
 // @title ÖZINŞE API
 // @version 1.0
@@ -51,20 +56,29 @@ func main() {
 	if err != nil {
 		log.Println("DATABASE_URL environment variable is not set")
 		log.Println("Running without CRUD endpoints")
-		log.Panicln(err.Error())
+		fmt.Println(err.Error())
 	}
 
 	dirImages := os.Getenv("DIR_IMAGES")
 	if dirImages == "" {
 		dirImages = "/images"
 	}
-	configuration.ApiCfg.DirImages = dirImages
 
 	dirVideos := os.Getenv("DIR_VIDEOS")
 	if dirVideos == "" {
 		dirVideos = "/videos"
 	}
-	configuration.ApiCfg.DirVideos = dirVideos
+
+	if configuration.ApiCfg != nil {
+		configuration.ApiCfg.DirImages = dirImages
+		configuration.ApiCfg.DirVideos = dirVideos
+	} else {
+		fmt.Println("No DATABASE_URL")
+		configuration.ApiCfg = &configuration.ApiConfiguration{
+			DirImages: dirImages,
+			DirVideos: dirVideos,
+		}
+	}
 
 	router := chi.NewRouter()
 
@@ -77,13 +91,32 @@ func main() {
 		MaxAge:           300,
 	}))
 
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		f, err := staticFiles.Open("static/index.html")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer f.Close()
+		if _, err := io.Copy(w, f); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	})
+
+	router.Get("/api", func(w http.ResponseWriter, r *http.Request) {
+
+		views.RespondWithJSON(w, http.StatusOK, views.ResponseMessage{
+			Message: "hello from api",
+		})
+	})
+
 	router.Get("/swagger/*",
 		httpSwagger.Handler(httpSwagger.URL("http://localhost:8081/swagger/doc.json")))
 
 	srv := &http.Server{
-		Addr:              ":" + port,
-		Handler:           router,
-		ReadHeaderTimeout: time.Second * 5,
+		Addr:    ":" + port,
+		Handler: router,
+		// ReadHeaderTimeout: time.Second * 5,
 	}
 
 	log.Printf("Serving on: http://localhost:%s\n", port)
