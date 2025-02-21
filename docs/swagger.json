@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is a sample server celler server.",
+        "description": "This is a sample server Petstore server.",
         "title": "Ozinshe API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
@@ -15,19 +15,7 @@
         },
         "version": "1.0"
     },
-    "host": "ozinshe.sapar.com",
-    "basePath": "/",
-    "paths": {},
-    "securityDefinitions": {
-        "Bearer": {
-            "description": "Type \"Bearer\" followed by a space and JWT token.",
-            "type": "apiKey",
-            "name": "Authorization",
-            "in": "header"
-        }
-    },
-    "externalDocs": {
-        "description": "OpenAPI",
-        "url": "https://swagger.io/resources/open-api/"
-    }
+    "host": "petstore.swagger.io",
+    "basePath": "/v2",
+    "paths": {}
 }
