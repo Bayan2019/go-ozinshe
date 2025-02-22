@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       PORT: "8081"
-      PLATFORM: "dev"
+      DIR: "/files/"
     volumes:
       - files:/files
     ports:

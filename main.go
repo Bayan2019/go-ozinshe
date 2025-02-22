@@ -45,39 +45,27 @@ func main() {
 		port = "8080"
 	}
 
-	platform := os.Getenv("PLATFORM")
-	if platform == "" {
-		platform = "dev"
-	}
+	// platform := os.Getenv("PLATFORM")
+	// if platform == "" {
+	// 	platform = "dev"
+	// }
 
 	dbURL := os.Getenv("DATABASE_URL")
 	fmt.Println(dbURL)
-	err := configuration.Connect2DB(dbURL, platform)
+	err := configuration.Connect2DB(dbURL)
 	if err != nil {
 		log.Println("DATABASE_URL environment variable is not set")
 		log.Println("Running without CRUD endpoints")
 		fmt.Println(err.Error())
 	}
 
-	dirImages := os.Getenv("DIR_IMAGES")
-	if dirImages == "" {
-		dirImages = "/images"
-	}
-
-	dirVideos := os.Getenv("DIR_VIDEOS")
-	if dirVideos == "" {
-		dirVideos = "/videos"
-	}
+	dir := os.Getenv("DIR")
 
 	if configuration.ApiCfg != nil {
-		configuration.ApiCfg.DirImages = dirImages
-		configuration.ApiCfg.DirVideos = dirVideos
+		configuration.ApiCfg.Dir = dir
 	} else {
 		fmt.Println("No DATABASE_URL")
-		configuration.ApiCfg = &configuration.ApiConfiguration{
-			DirImages: dirImages,
-			DirVideos: dirVideos,
-		}
+		configuration.ApiCfg = &configuration.ApiConfiguration{}
 	}
 
 	router := chi.NewRouter()

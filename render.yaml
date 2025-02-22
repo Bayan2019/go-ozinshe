@@ -5,7 +5,14 @@ services:
     plan: free
     image:
       url: docker.io/bayan2019/go-ozinshe:latest
-    disk:
-      name: files
-      mountPath: /files
-      sizeGB: 1
+    envVars:
+      - key: JWT_EXPIRE_DURATION
+        value: 6h
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: POLKA_KEY
+        generateValue: true
+    # disk: # not free so without docker volume as i wanted
+    #   name: files
+    #   mountPath: /files
+    #   sizeGB: 1
