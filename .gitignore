@@ -2,5 +2,6 @@
 # ozinshe-go
 files/
 notes/
-ozinshe.db
-ozinshe.db.ipynb
+repositories/db
+# ozinshe.db
+# ozinshe.db.ipynb
