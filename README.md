@@ -1,3 +1,5 @@
+![CI](https://github.com/Bayan2019/go-ozinshe/actions/workflows/ci.yml/badge.svg)
+
 [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://go-ozinshe.onrender.com)
 
 
