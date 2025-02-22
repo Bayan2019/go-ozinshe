@@ -1,15 +1,13 @@
 package main
 
 import (
-	"embed"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/Bayan2019/go-ozinshe/configuration"
-	"github.com/Bayan2019/go-ozinshe/views"
+	"github.com/Bayan2019/go-ozinshe/controllers"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
@@ -20,9 +18,6 @@ import (
 	_ "github.com/Bayan2019/go-ozinshe/docs"
 	// _ "github.com/mattn/go-sqlite3"
 )
-
-//go:embed static/*
-var staticFiles embed.FS
 
 // @title ÖZINŞE API
 // @version 1.0
@@ -79,24 +74,9 @@ func main() {
 		MaxAge:           300,
 	}))
 
-	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		f, err := staticFiles.Open("static/index.html")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		defer f.Close()
-		if _, err := io.Copy(w, f); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-	})
+	router.Get("/", controllers.StaticHandler)
 
-	router.Get("/api", func(w http.ResponseWriter, r *http.Request) {
-
-		views.RespondWithJSON(w, http.StatusOK, views.ResponseMessage{
-			Message: "hello from api",
-		})
-	})
+	router.Get("/api", controllers.HelloHandler)
 
 	router.Get("/swagger/*",
 		httpSwagger.Handler(httpSwagger.URL("http://localhost:8081/swagger/doc.json")))
