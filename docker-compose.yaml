@@ -6,14 +6,10 @@ services:
     environment:
       PORT: "8081"
       PLATFORM: "dev"
-      DIR_IMAGES: "/images"
-      DIR_VIDEOS: "/videos"
     volumes:
-      - images:/images
-      - videos:/videos
+      - files:/files
     ports:
       - "8081:8081"
 volumes:
-  images:
-  videos:
+  files:
     

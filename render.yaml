@@ -1,18 +1,11 @@
 services:
   api:
-    image: bayan2019/ozinshe-go
-    container_name: ozinshe-go
-    restart: always
-    environment:
-      PORT: "8081"
-      PLATFORM: "dev"
-      DIR_IMAGES: "/images"
-      DIR_VIDEOS: "/videos"
-    volumes:
-      - images:/images
-      - videos:/videos
-    ports:
-      - "8081:8081"
-volumes:
-  images:
-  videos:
+    type: web
+    name: ozinshe
+    plan: free
+    image:
+      url: docker.io/bayan2019/go-ozinshe:latest
+    disk:
+      name: files
+      mountPath: /files
+      sizeGB: 1
