@@ -1,14 +1,14 @@
 -- +goose Up
 INSERT INTO genres(title)
-VALUES ('Комедиялар'),
+VALUES ('Komedïyalar'),
        ('Отбасымен көретіндер'),
-       ('Ғылыми-танымдық'),
+       ('Ğılımï-tanımdıq'),
        ('Ойын-сауық'),
-       ('Ғылыми фантастика және фэнтези'),
-       ('Шытырман оқиғалы'),
-       ('Қысқаметрлі'),
-       ('Музыкалық'),
-       ('Спорттық');
+       ('Ğılımï fantastïka jäne féntezï'),
+       ('Şıtırman oqïğal'),
+       ('Qısqametrli'),
+       ('Mwzıkalıq'),
+       ('Sporttıq');
 
 -- +goose Down
 DELETE FROM genres;
