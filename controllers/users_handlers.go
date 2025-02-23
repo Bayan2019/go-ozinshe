@@ -38,7 +38,7 @@ func (uh *UsersHandlers) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hashedPassword, err := HashPassword(cur.Password)
+	hashedPassword, err := hashPassword(cur.Password)
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't hash password", err)
 		return
