@@ -54,6 +54,15 @@ type ProjectsGenre struct {
 	GenreID   int64
 }
 
+type RefreshToken struct {
+	Token     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserID    int64
+	ExpiresAt time.Time
+	RevokedAt sql.NullTime
+}
+
 type Role struct {
 	ID            int64
 	Title         string

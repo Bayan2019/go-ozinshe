@@ -3,7 +3,7 @@ INSERT INTO refresh_tokens(token, created_at, updated_at, user_id, expires_at, r
 VALUES (
     ?, 
     NOW(), NOW(), ?, 
-    NOW()+ INTERVAL '4 days', NULL
+    ?, NULL
 )
 RETURNING token;
 --
@@ -20,5 +20,5 @@ ORDER BY created_at DESC;
 -- name: RevokeToken :exec
 UPDATE refresh_tokens
 SET updated_at = NOW(), revoked_at = NOW()
-WHERE token = ? AND user_id = ?;
+WHERE token = ?;
 --
