@@ -21,7 +21,7 @@ import (
 
 // @title ÖZINŞE API
 // @version 1.0
-// @description This is a sample server Petstore server.
+// @description This is a sample server ÖZINŞE.
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support
@@ -76,7 +76,7 @@ func main() {
 
 	router.Get("/", controllers.StaticHandler)
 
-	router.Get("/api", controllers.HelloHandler)
+	router.Get("/hello", controllers.HelloHandler)
 
 	router.Get("/swagger/*",
 		httpSwagger.Handler(httpSwagger.URL("http://localhost:8081/swagger/doc.json")))

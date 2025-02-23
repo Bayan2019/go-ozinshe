@@ -11,6 +11,13 @@ import (
 //go:embed static/*
 var staticFiles embed.FS
 
+// Static godoc
+// @Summary      Giving Common page
+// @Tags Tests
+// @Produce      html
+// @Success      200  {body} file "OK"
+// @Failure   	 500  {object} views.ErrorResponse "Invalid file"
+// @Router       / [get]
 func StaticHandler(w http.ResponseWriter, r *http.Request) {
 	f, err := staticFiles.Open("static/index.html")
 	if err != nil {
@@ -24,6 +31,13 @@ func StaticHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Static godoc
+// @Summary      Saying hello
+// @Tags Tests
+// @Produce      json
+// @Success      200  {object} views.ResponseMessage "OK"
+// @Failure   	 500  {object} views.ErrorResponse "Invalid file"
+// @Router       /hello [get]
 func HelloHandler(w http.ResponseWriter, r *http.Request) {
 
 	views.RespondWithJSON(w, http.StatusOK, views.ResponseMessage{

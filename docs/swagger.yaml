@@ -1,16 +1,59 @@
 basePath: /v2
+definitions:
+  views.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  views.ResponseMessage:
+    properties:
+      message:
+        type: string
+    type: object
 host: petstore.swagger.io
 info:
   contact:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: This is a sample server Petstore server.
+  description: This is a sample server ÖZINŞE.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Ozinshe API
+  title: ÖZINŞE API
   version: "1.0"
-paths: {}
+paths:
+  /:
+    get:
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: body
+        "500":
+          description: Invalid file
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      summary: Giving Common page
+      tags:
+      - Tests
+  /hello:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseMessage'
+        "500":
+          description: Invalid file
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      summary: Saying hello
+      tags:
+      - Tests
 swagger: "2.0"

@@ -23,7 +23,76 @@ const docTemplate = `{
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/": {
+            "get": {
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "Tests"
+                ],
+                "summary": "Giving Common page",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "body"
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid file",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/hello": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tests"
+                ],
+                "summary": "Saying hello",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid file",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "views.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "views.ResponseMessage": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
@@ -32,8 +101,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "petstore.swagger.io",
 	BasePath:         "/v2",
 	Schemes:          []string{},
-	Title:            "Ozinshe API",
-	Description:      "This is a sample server Petstore server.",
+	Title:            "ÖZINŞE API",
+	Description:      "This is a sample server ÖZINŞE.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

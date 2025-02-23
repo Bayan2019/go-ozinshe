@@ -1,8 +1,8 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "This is a sample server Petstore server.",
-        "title": "Ozinshe API",
+        "description": "This is a sample server ÖZINŞE.",
+        "title": "ÖZINŞE API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "name": "API Support",
@@ -17,5 +17,74 @@
     },
     "host": "petstore.swagger.io",
     "basePath": "/v2",
-    "paths": {}
+    "paths": {
+        "/": {
+            "get": {
+                "produces": [
+                    "text/html"
+                ],
+                "tags": [
+                    "Tests"
+                ],
+                "summary": "Giving Common page",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "body"
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid file",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/hello": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tests"
+                ],
+                "summary": "Saying hello",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseMessage"
+                        }
+                    },
+                    "500": {
+                        "description": "Invalid file",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "views.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "views.ResponseMessage": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }
