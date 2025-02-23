@@ -25,8 +25,8 @@ func NewUsersHandlers(repo *repositories.UsersRepository) *UsersHandlers {
 // @Produce      json
 // @Param request body views.CreateUserRequest true "User data"
 // @Success      200  {object} views.ResponseId "OK"
-// @Failure   	 400  {object} views.ErrorRespons "Invalid data"
-// @Failure   	 500  {object} views.ErrorRespons "Couldn't hash password"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't hash password"
 // @Router       /v1/users [post]
 // @Security Bearer
 func (uh *UsersHandlers) Create(w http.ResponseWriter, r *http.Request) {

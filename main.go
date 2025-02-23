@@ -42,7 +42,7 @@ func main() {
 	}
 
 	dbURL := os.Getenv("DATABASE_URL")
-	fmt.Println(dbURL)
+	// fmt.Println(dbURL)
 	err := configuration.Connect2DB(dbURL)
 	if err != nil {
 		log.Println("DATABASE_URL environment variable is not set")

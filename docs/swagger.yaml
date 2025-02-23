@@ -1,9 +1,23 @@
 basePath: /v2
 definitions:
+  views.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
   views.ErrorResponse:
     properties:
       error:
         type: string
+    type: object
+  views.ResponseId:
+    properties:
+      id:
+        type: integer
     type: object
   views.ResponseMessage:
     properties:
@@ -56,4 +70,35 @@ paths:
       summary: Saying hello
       tags:
       - Tests
+  /v1/users:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/views.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseId'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't hash password
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create user
+      tags:
+      - users
 swagger: "2.0"
