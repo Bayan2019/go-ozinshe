@@ -57,6 +57,9 @@ func main() {
 
 	dir := os.Getenv("DIR")
 	jwtSecret := os.Getenv("JWT_SECRET")
+	if jwtSecret == "" {
+		jwtSecret = "superozinshe"
+	}
 
 	if configuration.ApiCfg != nil {
 		configuration.ApiCfg.Dir = dir
