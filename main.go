@@ -100,7 +100,9 @@ func main() {
 
 		authHandlers := controllers.NewAuthHandlers(configuration.ApiCfg.DB, configuration.ApiCfg.JwtSecret)
 
-		v1Router.Post("/login", authHandlers.Login)
+		v1Router.Post("/auth/sign-in", authHandlers.Login)
+		v1Router.Post("/auth/refresh", authHandlers.Refresh)
+		v1Router.Post("/auth/sign-out", authHandlers.Logout)
 
 		v1Router.Delete("/users", authHandlers.MiddlewareAuth(usersHandlers.Delete))
 

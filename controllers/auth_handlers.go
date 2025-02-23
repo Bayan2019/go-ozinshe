@@ -19,8 +19,8 @@ type TokenType string
 
 const (
 	// TokenTypeAccess -
-	// Set the Issuer to "chirpy"
-	TokenTypeAccess TokenType = "chirpy-access"
+	// Set the Issuer to "ozinshe"
+	TokenTypeAccess TokenType = "ozinshe-access"
 )
 
 type AuthHandlers struct {
@@ -91,7 +91,7 @@ func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 // @Failure   	 401  {object} views.ErrorResponse "Incorrect email or password"
 // @Failure      404  {object} views.ErrorResponse "Email not found"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't create tokens"
-// @Router       /v1/auth [post]
+// @Router       /v1/auth/sign-in [post]
 func (ah *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var signInReq views.SignInRequest
@@ -113,7 +113,7 @@ func (ah *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accessToken, err := MakeJWT(
+	accessToken, err := makeJWT(
 		user.Email,
 		ah.JwtSecret,
 		time.Hour*24,
@@ -145,8 +145,70 @@ func (ah *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// Add a GetBearerToken function to your auth package
-// getBearerToken -
+// SignIn godoc
+// @Tags Auth
+// @Summary      Refresh
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} views.TokensResponse
+// @Failure      400  {object} views.ErrorResponse "Couldn't find token"
+// @Failure   	 404  {object} views.ErrorResponse "Couldn't find user"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't create tokens"
+// @Router       /v1/auth/refresh [post]
+func (ah *AuthHandlers) Refresh(w http.ResponseWriter, r *http.Request) {
+	refreshToken, err := getBearerToken(r.Header)
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Couldn't find token", err)
+		return
+	}
+
+	user, err := ah.DB.GetUserFromRefreshToken(r.Context(), refreshToken)
+	if err != nil {
+		views.RespondWithError(w, http.StatusNotFound, "Couldn't get user of refresh token", err)
+		return
+	}
+
+	accessToken, err := makeJWT(
+		user.Email,
+		ah.JwtSecret,
+		time.Hour,
+	)
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't create token", err)
+		return
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, views.TokensResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	})
+}
+
+// SignIn godoc
+// @Tags Auth
+// @Summary      Sign Out
+// @Accept       json
+// @Produce      json
+// @Success      204
+// @Failure   	 400  {object} views.ErrorResponse "Couldn't find token"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't create tokens"
+// @Router       /v1/auth/sign-out [post]
+func (ah *AuthHandlers) Logout(w http.ResponseWriter, r *http.Request) {
+	refreshToken, err := getBearerToken(r.Header)
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Couldn't find token", err)
+		return
+	}
+
+	err = ah.DB.RevokeToken(r.Context(), refreshToken)
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't revoke session", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
 func getBearerToken(headers http.Header) (string, error) {
 	// Auth information will come into our server
 	// in the Authorization header.
@@ -165,9 +227,7 @@ func getBearerToken(headers http.Header) (string, error) {
 	return splitAuth[1], nil
 }
 
-// Add a MakeJWT function to your auth package:
-// MakeJWT -
-func MakeJWT(
+func makeJWT(
 	email string,
 	tokenSecret string,
 	expiresIn time.Duration,
@@ -184,21 +244,18 @@ func MakeJWT(
 			IssuedAt: jwt.NewNumericDate(time.Now().UTC()),
 			// Set ExpiresAt to the current time plus the expiration time (expiresIn)
 			ExpiresAt: jwt.NewNumericDate(time.Now().UTC().Add(expiresIn)),
-			// Set the Subject to a stringified version of the user's id
+			// Set the Subject to a stringified version of the user's email
 			Subject: email,
 		})
 	// Use token.SignedString to sign the token with the secret key.
 	return token.SignedString(signingKey)
 }
 
-// 6. Authentication / 6. JWTs
-// Add a ValidateJWT function to your auth package:
-// ValidateJWT -
 func validateJWT(tokenString, tokenSecret string) (string, error) {
 	claimsStruct := jwt.RegisteredClaims{}
 	// Use the jwt.ParseWithClaims function
-	// to validate the signature of the JWT and extract the claims
-	// into a *jwt.Token struct.
+	// to validate the signature of the JWT
+	// and extract the claims into a *jwt.Token struct.
 	token, err := jwt.ParseWithClaims(
 		tokenString,
 		&claimsStruct,
@@ -207,15 +264,12 @@ func validateJWT(tokenString, tokenSecret string) (string, error) {
 		},
 	)
 	if err != nil {
-		// An error will be returned if the token is invalid or has expired.
-		// If the token is invalid,
-		// return a 401 Unauthorized response from your handler.
 		return "", err
 	}
 
 	// If all is well with the token,
 	// use the token.Claims interface
-	// to get access to the user's id from the claims
+	// to get access to the user's email from the claims
 	// (which should be stored in the Subject field).
 	email, err := token.Claims.GetSubject()
 	if err != nil {
@@ -233,7 +287,6 @@ func validateJWT(tokenString, tokenSecret string) (string, error) {
 	return email, nil
 }
 
-// 6. Authentication / 1. Authentication with Passwords
 // Hash the password using the bcrypt.GenerateFromPassword function
 // HashPassword -
 func hashPassword(password string) (string, error) {
@@ -241,7 +294,6 @@ func hashPassword(password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	return string(dat), nil
 }
 
