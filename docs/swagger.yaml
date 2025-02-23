@@ -71,6 +71,31 @@ paths:
       tags:
       - Tests
   /v1/users:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: User id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseId'
+        "500":
+          description: Couldn't delete user
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Delete user
+      tags:
+      - users
     post:
       consumes:
       - application/json
@@ -96,9 +121,13 @@ paths:
           description: Couldn't hash password
           schema:
             $ref: '#/definitions/views.ErrorResponse'
-      security:
-      - Bearer: []
       summary: Create user
       tags:
       - users
+securityDefinitions:
+  Bearer:
+    description: Type "Bearer" followed by a space and JWT token.
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

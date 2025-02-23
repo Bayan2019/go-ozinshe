@@ -21,16 +21,16 @@ const (
 )
 
 type AuthHandlers struct {
-	authRepo *repositories.UsersRepository
+	DB *repositories.Queries
 }
 
-func NewAuthHandlers(repo *repositories.UsersRepository) *AuthHandlers {
+func NewAuthHandlers(db *repositories.Queries) *AuthHandlers {
 	return &AuthHandlers{
-		authRepo: repo,
+		DB: db,
 	}
 }
 
-type authedHandler func(http.ResponseWriter, *http.Request, repositories.User)
+type authedHandler func(http.ResponseWriter, *http.Request, views.User)
 
 func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -42,13 +42,26 @@ func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 
 		email, err := ValidateJWT(jwtToken, string(TokenTypeAccess))
 
-		user, err := ah.authRepo.DB.GetUserByEmail(r.Context(), email)
+		user, err := ah.DB.GetUserByEmail(r.Context(), email)
 		if err != nil {
 			views.RespondWithError(w, http.StatusNotFound, "Couldn't get user", err)
 			return
 		}
 
-		handler(w, r, user)
+		roles, err := ah.DB.GetRolesOfUser(r.Context(), user.ID)
+		if err != nil {
+			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get user", err)
+			return
+		}
+
+		handler(w, r, views.User{
+			Id:          user.ID,
+			Name:        user.Name,
+			Email:       user.Email,
+			DateOfBirth: user.DateOfBirth,
+			Phone:       user.Phone,
+			Roles:       roles,
+		})
 	}
 }
 

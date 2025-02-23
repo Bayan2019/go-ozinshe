@@ -76,11 +76,6 @@ const docTemplate = `{
         },
         "/v1/users": {
             "post": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -117,6 +112,46 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Couldn't hash password",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseId"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't delete user",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -163,6 +198,14 @@ const docTemplate = `{
                     "type": "string"
                 }
             }
+        }
+    },
+    "securityDefinitions": {
+        "Bearer": {
+            "description": "Type \"Bearer\" followed by a space and JWT token.",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`

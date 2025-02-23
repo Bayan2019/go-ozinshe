@@ -34,6 +34,11 @@ import (
 
 // @host petstore.swagger.io
 // @BasePath /v2
+
+// @securityDefinitions.apikey Bearer
+// @in header
+// @name Authorization
+// @description Type "Bearer" followed by a space and JWT token.
 func main() {
 	godotenv.Load(".env")
 	port := os.Getenv("PORT")
@@ -84,6 +89,10 @@ func main() {
 		usersHandlers := controllers.NewUsersHandlers(usersRepository)
 
 		v1Router.Post("/users", usersHandlers.Create)
+
+		authHandlers := controllers.NewAuthHandlers(configuration.ApiCfg.DB)
+
+		v1Router.Delete("/users", authHandlers.MiddlewareAuth(usersHandlers.Delete))
 
 	}
 

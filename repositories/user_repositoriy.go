@@ -41,3 +41,20 @@ func (ur *UsersRepository) Create(ctx context.Context, cup CreateUserParams) (in
 
 	return id, tx.Commit()
 }
+
+func (ur *UsersRepository) Delete(ctx context.Context, id int64) error {
+	tx, err := ur.Conn.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	qtx := ur.DB.WithTx(tx)
+
+	err = qtx.DeleteUser(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
