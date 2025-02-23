@@ -56,12 +56,16 @@ func main() {
 	}
 
 	dir := os.Getenv("DIR")
+	jwtSecret := os.Getenv("JWT_SECRET")
 
 	if configuration.ApiCfg != nil {
 		configuration.ApiCfg.Dir = dir
 	} else {
 		fmt.Println("No DATABASE_URL")
-		configuration.ApiCfg = &configuration.ApiConfiguration{}
+		configuration.ApiCfg = &configuration.ApiConfiguration{
+			Dir:       dir,
+			JwtSecret: jwtSecret,
+		}
 	}
 
 	router := chi.NewRouter()
@@ -90,7 +94,9 @@ func main() {
 
 		v1Router.Post("/users", usersHandlers.Create)
 
-		authHandlers := controllers.NewAuthHandlers(configuration.ApiCfg.DB)
+		authHandlers := controllers.NewAuthHandlers(configuration.ApiCfg.DB, configuration.ApiCfg.JwtSecret)
+
+		v1Router.Post("/login", authHandlers.Login)
 
 		v1Router.Delete("/users", authHandlers.MiddlewareAuth(usersHandlers.Delete))
 

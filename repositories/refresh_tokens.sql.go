@@ -10,14 +10,13 @@ import (
 	"time"
 )
 
-const createRefreshToken = `-- name: CreateRefreshToken :one
+const createRefreshToken = `-- name: CreateRefreshToken :exec
 INSERT INTO refresh_tokens(token, created_at, updated_at, user_id, expires_at, revoked_at)
 VALUES (
     ?, 
     NOW(), NOW(), ?, 
     ?, NULL
 )
-RETURNING token
 `
 
 type CreateRefreshTokenParams struct {
@@ -26,11 +25,9 @@ type CreateRefreshTokenParams struct {
 	ExpiresAt time.Time
 }
 
-func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) (string, error) {
-	row := q.db.QueryRowContext(ctx, createRefreshToken, arg.Token, arg.UserID, arg.ExpiresAt)
-	var token string
-	err := row.Scan(&token)
-	return token, err
+func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) error {
+	_, err := q.db.ExecContext(ctx, createRefreshToken, arg.Token, arg.UserID, arg.ExpiresAt)
+	return err
 }
 
 const getUserFromRefreshToken = `-- name: GetUserFromRefreshToken :one

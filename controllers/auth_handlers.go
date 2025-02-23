@@ -1,6 +1,9 @@
 package controllers
 
 import (
+	"crypto/rand"
+	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"net/http"
 	"strings"
@@ -21,12 +24,14 @@ const (
 )
 
 type AuthHandlers struct {
-	DB *repositories.Queries
+	DB        *repositories.Queries
+	JwtSecret string
 }
 
-func NewAuthHandlers(db *repositories.Queries) *AuthHandlers {
+func NewAuthHandlers(db *repositories.Queries, jwtSecret string) *AuthHandlers {
 	return &AuthHandlers{
-		DB: db,
+		DB:        db,
+		JwtSecret: jwtSecret,
 	}
 }
 
@@ -34,13 +39,17 @@ type authedHandler func(http.ResponseWriter, *http.Request, views.User)
 
 func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		jwtToken, err := GetBearerToken(r.Header)
+		jwtToken, err := getBearerToken(r.Header)
 		if err != nil {
 			views.RespondWithError(w, http.StatusUnauthorized, "Couldn't find token", err)
 			return
 		}
 
-		email, err := ValidateJWT(jwtToken, string(TokenTypeAccess))
+		email, err := validateJWT(jwtToken, string(TokenTypeAccess))
+		if err != nil {
+			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get email from token", err)
+			return
+		}
 
 		user, err := ah.DB.GetUserByEmail(r.Context(), email)
 		if err != nil {
@@ -65,10 +74,62 @@ func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 	}
 }
 
-// 6. Authentication / 1. Authentication with JWTs
+func (ah *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var signInReq views.SignInRequest
+	err := decoder.Decode(&signInReq)
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
+		return
+	}
+
+	user, err := ah.DB.GetUserByEmail(r.Context(), signInReq.Email)
+	if err != nil {
+		views.RespondWithError(w, http.StatusNotFound, "Couldn't find the user with such email", err)
+		return
+	}
+
+	err = checkPasswordHash(user.PasswordHash, signInReq.Password)
+	if err != nil {
+		views.RespondWithError(w, http.StatusUnauthorized, "Incorrect email or password", err)
+		return
+	}
+
+	accessToken, err := MakeJWT(
+		user.Email,
+		ah.JwtSecret,
+		time.Hour*24,
+	)
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't create access JWT", err)
+		return
+	}
+
+	refreshToken, err := makeRefreshToken()
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't create refresh token", err)
+		return
+	}
+
+	err = ah.DB.CreateRefreshToken(r.Context(), repositories.CreateRefreshTokenParams{
+		Token:     refreshToken,
+		UserID:    user.ID,
+		ExpiresAt: time.Now().UTC().Add(time.Hour * 24 * 60),
+	})
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't save refresh token in DataBase", err)
+		return
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, views.TokensResponse{
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
+	})
+}
+
 // Add a GetBearerToken function to your auth package
-// GetBearerToken -
-func GetBearerToken(headers http.Header) (string, error) {
+// getBearerToken -
+func getBearerToken(headers http.Header) (string, error) {
 	// Auth information will come into our server
 	// in the Authorization header.
 	authHeader := headers.Get("Authorization")
@@ -86,7 +147,6 @@ func GetBearerToken(headers http.Header) (string, error) {
 	return splitAuth[1], nil
 }
 
-// 6. Authentication / 6. JWTs
 // Add a MakeJWT function to your auth package:
 // MakeJWT -
 func MakeJWT(
@@ -116,7 +176,7 @@ func MakeJWT(
 // 6. Authentication / 6. JWTs
 // Add a ValidateJWT function to your auth package:
 // ValidateJWT -
-func ValidateJWT(tokenString, tokenSecret string) (string, error) {
+func validateJWT(tokenString, tokenSecret string) (string, error) {
 	claimsStruct := jwt.RegisteredClaims{}
 	// Use the jwt.ParseWithClaims function
 	// to validate the signature of the JWT and extract the claims
@@ -158,11 +218,24 @@ func ValidateJWT(tokenString, tokenSecret string) (string, error) {
 // 6. Authentication / 1. Authentication with Passwords
 // Hash the password using the bcrypt.GenerateFromPassword function
 // HashPassword -
-func HashPassword(password string) (string, error) {
+func hashPassword(password string) (string, error) {
 	dat, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
 	}
 
 	return string(dat), nil
+}
+
+func checkPasswordHash(password, hash string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+}
+
+func makeRefreshToken() (string, error) {
+	token := make([]byte, 32)
+	_, err := rand.Read(token)
+	if err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(token), nil
 }

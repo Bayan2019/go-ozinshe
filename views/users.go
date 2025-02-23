@@ -20,3 +20,13 @@ type User struct {
 	Phone       string              `json:"phone"`
 	Roles       []repositories.Role `json:"roles"`
 }
+
+type SignInRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type TokensResponse struct {
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
+}
