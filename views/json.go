@@ -10,6 +10,12 @@ type ResponseMessage struct {
 	Message string `json:"message"`
 }
 
+func NewResponseMessage(msg string) ResponseMessage {
+	return ResponseMessage{
+		Message: msg,
+	}
+}
+
 type ErrorResponse struct {
 	Error string `json:"error"`
 }
