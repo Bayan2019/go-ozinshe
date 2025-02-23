@@ -20,5 +20,5 @@ ORDER BY created_at DESC;
 -- name: RevokeToken :exec
 UPDATE refresh_tokens
 SET updated_at = NOW(), revoked_at = NOW()
-WHERE token = ?;
+WHERE token = ? AND revoked_at IS NULL;
 --
