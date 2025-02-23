@@ -74,12 +74,24 @@ func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 	}
 }
 
+// SignIn godoc
+// @Tags Auth
+// @Summary      Sign In
+// @Accept       json
+// @Produce      json
+// @Param request body views.SignInRequest true "Request body"
+// @Success      200  {object} views.TokensResponse "OK"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid Data"
+// @Failure   	 401  {object} views.ErrorResponse "Incorrect email or password"
+// @Failure      404  {object} views.ErrorResponse "Email not found"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't create tokens"
+// @Router       /v1/auth [post]
 func (ah *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	var signInReq views.SignInRequest
 	err := decoder.Decode(&signInReq)
 	if err != nil {
-		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't decode parameters", err)
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid Data", err)
 		return
 	}
 
