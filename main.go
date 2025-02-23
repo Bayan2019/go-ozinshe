@@ -63,6 +63,7 @@ func main() {
 
 	if configuration.ApiCfg != nil {
 		configuration.ApiCfg.Dir = dir
+		configuration.ApiCfg.JwtSecret = jwtSecret
 	} else {
 		fmt.Println("No DATABASE_URL")
 		configuration.ApiCfg = &configuration.ApiConfiguration{
