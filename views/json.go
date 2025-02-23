@@ -6,6 +6,16 @@ import (
 	"net/http"
 )
 
+type ResponseId struct {
+	ID int `json:"id"`
+}
+
+func NewResponseId(id int) ResponseId {
+	return ResponseId{
+		ID: id,
+	}
+}
+
 type ResponseMessage struct {
 	Message string `json:"message"`
 }

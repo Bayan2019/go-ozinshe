@@ -8,6 +8,7 @@ import (
 
 	"github.com/Bayan2019/go-ozinshe/configuration"
 	"github.com/Bayan2019/go-ozinshe/controllers"
+	"github.com/Bayan2019/go-ozinshe/repositories"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
@@ -39,11 +40,6 @@ func main() {
 	if port == "" {
 		port = "8080"
 	}
-
-	// platform := os.Getenv("PLATFORM")
-	// if platform == "" {
-	// 	platform = "dev"
-	// }
 
 	dbURL := os.Getenv("DATABASE_URL")
 	fmt.Println(dbURL)
@@ -80,6 +76,18 @@ func main() {
 
 	router.Get("/swagger/*",
 		httpSwagger.Handler(httpSwagger.URL("http://localhost:8081/swagger/doc.json")))
+
+	v1Router := chi.NewRouter()
+
+	if configuration.ApiCfg.DB != nil {
+		usersRepository := repositories.NewUsersRepository(configuration.ApiCfg.Conn)
+		usersHandlers := controllers.NewUsersHandlers(usersRepository)
+
+		v1Router.Post("/users", usersHandlers.Create)
+
+	}
+
+	router.Mount("/v1", v1Router)
 
 	srv := &http.Server{
 		Addr:    ":" + port,

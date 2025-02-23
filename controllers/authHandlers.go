@@ -9,6 +9,7 @@ import (
 	"github.com/Bayan2019/go-ozinshe/repositories"
 	"github.com/Bayan2019/go-ozinshe/views"
 	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type TokenType string
@@ -29,7 +30,9 @@ func NewAuthHandlers(repo *repositories.UsersRepository) *AuthHandlers {
 	}
 }
 
-func (ah *AuthHandlers) MiddlewareAuth(handler http.Handler) http.HandlerFunc {
+type authedHandler func(http.ResponseWriter, *http.Request, repositories.User)
+
+func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		jwtToken, err := GetBearerToken(r.Header)
 		if err != nil {
@@ -39,13 +42,13 @@ func (ah *AuthHandlers) MiddlewareAuth(handler http.Handler) http.HandlerFunc {
 
 		email, err := ValidateJWT(jwtToken, string(TokenTypeAccess))
 
-		_, err = ah.authRepo.DB.GetUserByEmail(r.Context(), email)
+		user, err := ah.authRepo.DB.GetUserByEmail(r.Context(), email)
 		if err != nil {
 			views.RespondWithError(w, http.StatusNotFound, "Couldn't get user", err)
 			return
 		}
 
-		handler.ServeHTTP(w, r)
+		handler(w, r, user)
 	}
 }
 
@@ -137,4 +140,16 @@ func ValidateJWT(tokenString, tokenSecret string) (string, error) {
 	}
 
 	return email, nil
+}
+
+// 6. Authentication / 1. Authentication with Passwords
+// Hash the password using the bcrypt.GenerateFromPassword function
+// HashPassword -
+func HashPassword(password string) (string, error) {
+	dat, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	return string(dat), nil
 }
