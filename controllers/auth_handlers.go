@@ -57,6 +57,12 @@ func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 			return
 		}
 
+		_, err = ah.DB.GetRefreshTokenOfUser(r.Context(), user.ID)
+		if err != nil {
+			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't find refresh_token for user", err)
+			return
+		}
+
 		roles, err := ah.DB.GetRolesOfUser(r.Context(), user.ID)
 		if err != nil {
 			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get user", err)
