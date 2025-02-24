@@ -103,6 +103,11 @@ func main() {
 		usersHandlers := controllers.NewUsersHandlers(usersRepository)
 
 		v1Router.Post("/users", usersHandlers.Register)
+		v1Router.Get("/users", authHandlers.MiddlewareAuth(usersHandlers.GetUsers))
+		v1Router.Get("/users/{id}", authHandlers.MiddlewareAuth(usersHandlers.GetUser))
+		v1Router.Put("/users/{id}", authHandlers.MiddlewareAuth(usersHandlers.Update))
+		v1Router.Delete("/users/{id}", authHandlers.MiddlewareAuth(usersHandlers.Delete))
+
 		v1Router.Get("/users/profile", authHandlers.MiddlewareAuth(usersHandlers.GetProfile))
 		v1Router.Put("/users/profile", authHandlers.MiddlewareAuth(usersHandlers.UpdateProfile))
 		v1Router.Delete("/users/profile", authHandlers.MiddlewareAuth(usersHandlers.DeleteProfile))

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/Bayan2019/go-ozinshe/repositories"
 	"github.com/Bayan2019/go-ozinshe/views"
@@ -20,7 +21,7 @@ func NewUsersHandlers(repo *repositories.UsersRepository) *UsersHandlers {
 }
 
 // Create godoc
-// @Tags users
+// @Tags Users
 // @Summary      Create user (Register)
 // @Accept       json
 // @Produce      json
@@ -55,7 +56,7 @@ func (uh *UsersHandlers) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 // Create godoc
-// @Tags users
+// @Tags Users
 // @Summary      Update user profile
 // @Accept       json
 // @Produce      json
@@ -77,12 +78,7 @@ func (uh *UsersHandlers) UpdateProfile(w http.ResponseWriter, r *http.Request, u
 		return
 	}
 
-	if upr.Id != user.Id {
-		views.RespondWithError(w, http.StatusBadRequest, "Wrong User", errors.New("Wrong user"))
-		return
-	}
-
-	err = uh.userRepo.UpdateProfile(r.Context(), upr)
+	err = uh.userRepo.UpdateProfile(r.Context(), user.Id, upr)
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't update user data", err)
 		return
@@ -92,8 +88,8 @@ func (uh *UsersHandlers) UpdateProfile(w http.ResponseWriter, r *http.Request, u
 }
 
 // Delete godoc
-// @Tags users
-// @Summary      Get user profile
+// @Tags Users
+// @Summary      Get User profile
 // @Accept       json
 // @Produce      json
 // @Success      200  {object} views.User "OK"
@@ -107,7 +103,7 @@ func (uh *UsersHandlers) GetProfile(w http.ResponseWriter, r *http.Request, user
 }
 
 // Delete godoc
-// @Tags users
+// @Tags Users
 // @Summary      Delete user profile
 // @Accept       json
 // @Produce      json
@@ -124,4 +120,127 @@ func (uh *UsersHandlers) DeleteProfile(w http.ResponseWriter, r *http.Request, u
 		return
 	}
 	views.RespondWithJSON(w, http.StatusOK, views.NewResponseId(int(user.Id)))
+}
+
+// Create godoc
+// @Tags Users
+// @Summary      Update user
+// @Accept       json
+// @Produce      json
+// @Param request body views.UpdateUserRequest true "User data"
+// @Success      200  "OK"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
+// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't update user data"
+// @Router       /v1/users/{id} [put]
+// @Security Bearer
+func (uh *UsersHandlers) Update(w http.ResponseWriter, r *http.Request, user views.User) {
+
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Users == 3 {
+			can_do = true
+		}
+	}
+
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "Don't have permission", errors.New("No Permission"))
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	uur := views.UpdateUserRequest{}
+
+	err = decoder.Decode(&uur)
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Error parsing JSON of UpdateUserRequest", err)
+		return
+	}
+
+	err = uh.userRepo.Update(r.Context(), int64(id), uur)
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't update user data", err)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+// Delete godoc
+// @Tags Users
+// @Summary      Get User
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} views.User "OK"
+// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get user"
+// @Router       /v1/users/{id} [get]
+// @Security Bearer
+func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user views.User) {
+	views.RespondWithJSON(w, http.StatusOK, user)
+}
+
+// Delete godoc
+// @Tags Users
+// @Summary      Get Users
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} views.User "OK"
+// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get user"
+// @Router       /v1/users [get]
+// @Security Bearer
+func (uh *UsersHandlers) GetUsers(w http.ResponseWriter, r *http.Request, user views.User) {
+	views.RespondWithJSON(w, http.StatusOK, user)
+}
+
+// Delete godoc
+// @Tags Users
+// @Summary      Delete user profile
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} views.ResponseId "OK"
+// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't delete user"
+// @Router       /v1/users/{id} [delete]
+// @Security Bearer
+func (uh *UsersHandlers) Delete(w http.ResponseWriter, r *http.Request, user views.User) {
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Users == 3 {
+			can_do = true
+		}
+	}
+
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "Don't have permission", errors.New("No Permission"))
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
+		return
+	}
+
+	err = uh.userRepo.DB.DeleteUser(r.Context(), int64(id))
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't delete user", err)
+		return
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, views.NewResponseId(id))
 }

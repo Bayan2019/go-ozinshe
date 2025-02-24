@@ -11,12 +11,20 @@ type CreateUserRequest struct {
 }
 
 type UpdateProfileRequest struct {
-	Id          int64     `json:"id"`
+	// Id          int64     `json:"id"`
 	Name        string    `json:"name"`
 	Email       string    `json:"email"`
 	DateOfBirth time.Time `json:"date_of_birth"`
 	Phone       string    `json:"phone"`
-	// RoleIds     []int64   `json:"role_ids"`
+}
+
+type UpdateUserRequest struct {
+	// Id          int64     `json:"id"`
+	Name        string    `json:"name"`
+	Email       string    `json:"email"`
+	DateOfBirth time.Time `json:"date_of_birth"`
+	Phone       string    `json:"phone"`
+	RoleIds     []int64   `json:"role_ids"`
 }
 
 type User struct {

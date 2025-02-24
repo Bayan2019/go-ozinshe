@@ -44,7 +44,7 @@ func (ur *UsersRepository) Create(ctx context.Context, cup CreateUserParams) (in
 	return id, tx.Commit()
 }
 
-func (ur *UsersRepository) UpdateProfile(ctx context.Context, upr views.UpdateProfileRequest) error {
+func (ur *UsersRepository) UpdateProfile(ctx context.Context, id int64, upr views.UpdateProfileRequest) error {
 	tx, err := ur.Conn.Begin()
 	if err != nil {
 		return err
@@ -54,7 +54,7 @@ func (ur *UsersRepository) UpdateProfile(ctx context.Context, upr views.UpdatePr
 	qtx := ur.DB.WithTx(tx)
 
 	err = qtx.UpdateUser(ctx, UpdateUserParams{
-		ID:          upr.Id,
+		ID:          id,
 		Name:        upr.Name,
 		Email:       upr.Email,
 		DateOfBirth: upr.DateOfBirth,
@@ -62,6 +62,39 @@ func (ur *UsersRepository) UpdateProfile(ctx context.Context, upr views.UpdatePr
 	})
 	if err != nil {
 		return err
+	}
+
+	return tx.Commit()
+}
+
+func (ur *UsersRepository) Update(ctx context.Context, id int64, uur views.UpdateUserRequest) error {
+	tx, err := ur.Conn.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	qtx := ur.DB.WithTx(tx)
+
+	err = qtx.UpdateUser(ctx, UpdateUserParams{
+		ID:          id,
+		Name:        uur.Name,
+		Email:       uur.Email,
+		DateOfBirth: uur.DateOfBirth,
+		Phone:       uur.Phone,
+	})
+	if err != nil {
+		return err
+	}
+
+	for _, role_id := range uur.RoleIds {
+		err = qtx.AddRole2User(ctx, AddRole2UserParams{
+			UserID: id,
+			RoleID: role_id,
+		})
+		if err != nil {
+			return err
+		}
 	}
 
 	return tx.Commit()
