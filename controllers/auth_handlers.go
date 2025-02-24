@@ -165,6 +165,7 @@ func (ah *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 // @Summary      Refresh
 // @Accept       json
 // @Produce      json
+// @Param Authorization header string true "Bearer RefreshToken"
 // @Success      200  {object} views.TokensResponse
 // @Failure      400  {object} views.ErrorResponse "Couldn't find token"
 // @Failure   	 404  {object} views.ErrorResponse "Couldn't find user"
@@ -204,6 +205,7 @@ func (ah *AuthHandlers) Refresh(w http.ResponseWriter, r *http.Request) {
 // @Summary      Sign Out
 // @Accept       json
 // @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
 // @Success      204
 // @Failure   	 400  {object} views.ErrorResponse "Couldn't find token"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't create tokens"

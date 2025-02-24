@@ -60,6 +60,7 @@ func (uh *UsersHandlers) Register(w http.ResponseWriter, r *http.Request) {
 // @Summary      Update user profile
 // @Accept       json
 // @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
 // @Param request body views.UpdateProfileRequest true "User data"
 // @Success      200  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
@@ -92,6 +93,7 @@ func (uh *UsersHandlers) UpdateProfile(w http.ResponseWriter, r *http.Request, u
 // @Summary      Get User profile
 // @Accept       json
 // @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
 // @Success      200  {object} views.User "OK"
 // @Failure   	 401  {object} views.ErrorResponse "No token"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User"
@@ -107,6 +109,7 @@ func (uh *UsersHandlers) GetProfile(w http.ResponseWriter, r *http.Request, user
 // @Summary      Delete user profile
 // @Accept       json
 // @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
 // @Success      200  {object} views.ResponseId "OK"
 // @Failure   	 401  {object} views.ErrorResponse "No token"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User"
@@ -127,6 +130,8 @@ func (uh *UsersHandlers) DeleteProfile(w http.ResponseWriter, r *http.Request, u
 // @Summary      Update user
 // @Accept       json
 // @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
+// @Param id path int true "id"
 // @Param request body views.UpdateUserRequest true "User data"
 // @Success      200  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
@@ -179,6 +184,8 @@ func (uh *UsersHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 // @Summary      Get User
 // @Accept       json
 // @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
+// @Param id path int true "id"
 // @Success      200  {object} views.User "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token"
@@ -248,6 +255,7 @@ func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user vi
 // @Summary      Get Users List
 // @Accept       json
 // @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
 // @Success      200  {array} views.User "OK"
 // @Failure   	 401  {object} views.ErrorResponse "No token"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
@@ -282,6 +290,8 @@ func (uh *UsersHandlers) GetUsers(w http.ResponseWriter, r *http.Request, user v
 // @Summary      Delete user profile
 // @Accept       json
 // @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
+// @Param id path int true "id"
 // @Success      200  {object} views.ResponseId "OK"
 // @Failure   	 401  {object} views.ErrorResponse "No token"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
