@@ -333,8 +333,16 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/views.User'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
         "401":
           description: No token
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
           schema:
             $ref: '#/definitions/views.ErrorResponse'
         "404":
@@ -342,7 +350,7 @@ paths:
           schema:
             $ref: '#/definitions/views.ErrorResponse'
         "500":
-          description: Couldn't Get user
+          description: Couldn't get roles
           schema:
             $ref: '#/definitions/views.ErrorResponse'
       security:

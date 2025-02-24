@@ -465,8 +465,20 @@ const docTemplate = `{
                             "$ref": "#/definitions/views.User"
                         }
                     },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
                     "401": {
                         "description": "No token",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -478,7 +490,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Couldn't Get user",
+                        "description": "Couldn't get roles",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }

@@ -180,13 +180,67 @@ func (uh *UsersHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 // @Accept       json
 // @Produce      json
 // @Success      200  {object} views.User "OK"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User"
-// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get user"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't get roles"
 // @Router       /v1/users/{id} [get]
 // @Security Bearer
 func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user views.User) {
-	views.RespondWithJSON(w, http.StatusOK, user)
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Users == 3 {
+			can_do = true
+		}
+	}
+
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "Don't have permission", errors.New("No Permission"))
+		return
+	}
+
+	id, err := strconv.Atoi(r.PathValue("id"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
+		return
+	}
+
+	user1, err := uh.userRepo.DB.GetUserById(r.Context(), int64(id))
+	if err != nil {
+		views.RespondWithError(w, http.StatusNotFound, "Couldn't get user", err)
+		return
+	}
+
+	rRoles, err := uh.userRepo.DB.GetRolesOfUser(r.Context(), user1.ID)
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get roles", err)
+		return
+	}
+
+	vRoles := []views.Role{}
+
+	for _, role := range rRoles {
+		vRoles = append(vRoles, views.Role{
+			ID:            role.ID,
+			Title:         role.Title,
+			Projects:      role.Projects,
+			Genres:        role.Genres,
+			AgeCategories: role.AgeCategories,
+			Types:         role.Types,
+			Users:         role.Users,
+			Roles:         role.Roles,
+		})
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, views.User{
+		Id:          user1.ID,
+		Name:        user1.Name,
+		Email:       user1.Email,
+		DateOfBirth: user1.DateOfBirth,
+		Phone:       user1.Phone,
+		Roles:       vRoles,
+	})
 }
 
 // Delete godoc
