@@ -72,6 +72,7 @@ func (rh *RolesHandlers) Get(w http.ResponseWriter, r *http.Request, user views.
 	for _, role := range user.Roles {
 		if role.Roles >= 2 {
 			can_do = true
+			break
 		}
 	}
 
@@ -89,13 +90,14 @@ func (rh *RolesHandlers) Get(w http.ResponseWriter, r *http.Request, user views.
 	views.RespondWithJSON(w, http.StatusOK, roles)
 }
 
-// Get godoc
+// Update godoc
 // @Tags Roles
 // @Summary      Get Roles List
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param id path int true "id"
+// @Param request body views.UpdateRoleRequest true "User data"
 // @Success      200  {object} database.Role "OK"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
@@ -106,8 +108,9 @@ func (rh *RolesHandlers) Get(w http.ResponseWriter, r *http.Request, user views.
 func (rh *RolesHandlers) Update(w http.ResponseWriter, r *http.Request, user views.User) {
 	can_do := false
 	for _, role := range user.Roles {
-		if role.Roles >= 2 {
+		if role.Roles == 2 {
 			can_do = true
+			break
 		}
 	}
 

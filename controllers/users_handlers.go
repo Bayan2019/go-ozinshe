@@ -152,6 +152,7 @@ func (uh *UsersHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 	for _, role := range user.Roles {
 		if role.Users == 3 {
 			can_do = true
+			break
 		}
 	}
 
@@ -204,6 +205,7 @@ func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user vi
 	for _, role := range user.Roles {
 		if role.Users >= 2 {
 			can_do = true
+			break
 		}
 	}
 
@@ -273,6 +275,7 @@ func (uh *UsersHandlers) GetUsers(w http.ResponseWriter, r *http.Request, user v
 	for _, role := range user.Roles {
 		if role.Users >= 2 {
 			can_do = true
+			break
 		}
 	}
 
@@ -310,6 +313,7 @@ func (uh *UsersHandlers) Delete(w http.ResponseWriter, r *http.Request, user vie
 	for _, role := range user.Roles {
 		if role.Users == 3 {
 			can_do = true
+			break
 		}
 	}
 
