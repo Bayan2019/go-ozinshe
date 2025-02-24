@@ -86,6 +86,15 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "Refresh",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer RefreshToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -183,6 +192,15 @@ const docTemplate = `{
                     "Auth"
                 ],
                 "summary": "Sign Out",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "204": {
                         "description": "No Content"
@@ -219,18 +237,27 @@ const docTemplate = `{
                     "Roles"
                 ],
                 "summary": "Get Roles List",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/repositories.Role"
+                                "$ref": "#/definitions/database.Role"
                             }
                         }
                     },
                     "401": {
-                        "description": "No token",
+                        "description": "No token Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -242,7 +269,74 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Not found User",
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't Get roles",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/roles/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Get Roles List",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/database.Role"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -273,6 +367,15 @@ const docTemplate = `{
                     "Users"
                 ],
                 "summary": "Get Users List",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -284,7 +387,7 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "No token",
+                        "description": "No token Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -296,7 +399,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Not found User",
+                        "description": "Not found User Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -370,6 +473,15 @@ const docTemplate = `{
                     "Users"
                 ],
                 "summary": "Get User profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -378,13 +490,13 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "No token",
+                        "description": "No token Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
                     },
                     "404": {
-                        "description": "Not found User",
+                        "description": "Not found User Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -416,7 +528,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "With the Bearer started",
+                        "description": "Bearer AccessToken",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -442,13 +554,13 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "No token",
+                        "description": "No token Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
                     },
                     "404": {
-                        "description": "Not found User",
+                        "description": "Not found User Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -477,6 +589,15 @@ const docTemplate = `{
                     "Users"
                 ],
                 "summary": "Delete user profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -485,13 +606,13 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "No token",
+                        "description": "No token Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
                     },
                     "404": {
-                        "description": "Not found User",
+                        "description": "Not found User Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -522,6 +643,22 @@ const docTemplate = `{
                     "Users"
                 ],
                 "summary": "Get User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -536,7 +673,7 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "No token",
+                        "description": "No token Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -548,7 +685,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Not found User",
+                        "description": "Not found User Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -579,6 +716,20 @@ const docTemplate = `{
                 "summary": "Update user",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "description": "User data",
                         "name": "request",
                         "in": "body",
@@ -599,7 +750,7 @@ const docTemplate = `{
                         }
                     },
                     "401": {
-                        "description": "No token",
+                        "description": "No token Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -611,7 +762,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Not found User",
+                        "description": "Not found User Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -640,6 +791,22 @@ const docTemplate = `{
                     "Users"
                 ],
                 "summary": "Delete user profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -647,8 +814,14 @@ const docTemplate = `{
                             "$ref": "#/definitions/views.ResponseId"
                         }
                     },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
                     "401": {
-                        "description": "No token",
+                        "description": "No token Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -660,7 +833,7 @@ const docTemplate = `{
                         }
                     },
                     "404": {
-                        "description": "Not found User",
+                        "description": "Not found User Middleware",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -676,7 +849,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "repositories.Role": {
+        "database.Role": {
             "type": "object",
             "properties": {
                 "ageCategories": {

@@ -21,7 +21,7 @@ func NewUsersHandlers(repo *repositories.UsersRepository) *UsersHandlers {
 	}
 }
 
-// Create godoc
+// Register godoc
 // @Tags Users
 // @Summary      Create user (Register)
 // @Accept       json
@@ -60,7 +60,7 @@ func (uh *UsersHandlers) Register(w http.ResponseWriter, r *http.Request) {
 	views.RespondWithJSON(w, http.StatusCreated, views.NewResponseId(int(id)))
 }
 
-// Create godoc
+// UpdateProfile godoc
 // @Tags Users
 // @Summary      Update user profile
 // @Accept       json
@@ -69,8 +69,8 @@ func (uh *UsersHandlers) Register(w http.ResponseWriter, r *http.Request) {
 // @Param request body views.UpdateProfileRequest true "User data"
 // @Success      200  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
-// @Failure   	 401  {object} views.ErrorResponse "No token"
-// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't update user data"
 // @Router       /v1/users/profile [put]
 // @Security Bearer
@@ -93,15 +93,15 @@ func (uh *UsersHandlers) UpdateProfile(w http.ResponseWriter, r *http.Request, u
 	w.WriteHeader(http.StatusOK)
 }
 
-// Delete godoc
+// GetProfile godoc
 // @Tags Users
 // @Summary      Get User profile
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Success      200  {object} views.User "OK"
-// @Failure   	 401  {object} views.ErrorResponse "No token"
-// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't Get user"
 // @Router       /v1/users/profile [get]
 // @Security Bearer
@@ -109,15 +109,15 @@ func (uh *UsersHandlers) GetProfile(w http.ResponseWriter, r *http.Request, user
 	views.RespondWithJSON(w, http.StatusOK, user)
 }
 
-// Delete godoc
+// DeleteProfile godoc
 // @Tags Users
 // @Summary      Delete user profile
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Success      200  {object} views.ResponseId "OK"
-// @Failure   	 401  {object} views.ErrorResponse "No token"
-// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't delete user"
 // @Router       /v1/users/profile [delete]
 // @Security Bearer
@@ -130,7 +130,7 @@ func (uh *UsersHandlers) DeleteProfile(w http.ResponseWriter, r *http.Request, u
 	views.RespondWithJSON(w, http.StatusOK, views.NewResponseId(int(user.Id)))
 }
 
-// Create godoc
+// Update godoc
 // @Tags Users
 // @Summary      Update user
 // @Accept       json
@@ -140,9 +140,9 @@ func (uh *UsersHandlers) DeleteProfile(w http.ResponseWriter, r *http.Request, u
 // @Param request body views.UpdateUserRequest true "User data"
 // @Success      200  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
-// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
-// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't update user data"
 // @Router       /v1/users/{id} [put]
 // @Security Bearer
@@ -193,9 +193,9 @@ func (uh *UsersHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 // @Param id path int true "id"
 // @Success      200  {object} views.User "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
-// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
-// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't get roles"
 // @Router       /v1/users/{id} [get]
 // @Security Bearer
@@ -255,16 +255,16 @@ func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user vi
 	})
 }
 
-// Delete godoc
+// GetUsers godoc
 // @Tags Users
 // @Summary      Get Users List
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Success      200  {array} views.User "OK"
-// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
-// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't Get users"
 // @Router       /v1/users [get]
 // @Security Bearer
@@ -298,9 +298,10 @@ func (uh *UsersHandlers) GetUsers(w http.ResponseWriter, r *http.Request, user v
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param id path int true "id"
 // @Success      200  {object} views.ResponseId "OK"
-// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
-// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't delete user"
 // @Router       /v1/users/{id} [delete]
 // @Security Bearer
