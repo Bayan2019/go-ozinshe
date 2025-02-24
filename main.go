@@ -43,7 +43,7 @@ import (
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
-		fmt.Println("warning: assuming default configuration. .env unreadable: %v", err)
+		fmt.Printf("warning: assuming default configuration. .env unreadable: %v\n", err)
 	}
 
 	port := os.Getenv("PORT")
