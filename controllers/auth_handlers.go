@@ -160,7 +160,7 @@ func (ah *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// SignIn godoc
+// Refresh godoc
 // @Tags Auth
 // @Summary      Refresh
 // @Accept       json
@@ -200,7 +200,7 @@ func (ah *AuthHandlers) Refresh(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// SignIn godoc
+// SignOut godoc
 // @Tags Auth
 // @Summary      Sign Out
 // @Accept       json

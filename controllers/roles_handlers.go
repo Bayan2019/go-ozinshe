@@ -18,7 +18,7 @@ func NewRolesHandlers(db *database.Queries) *RolesHandlers {
 	}
 }
 
-// Delete godoc
+// Get godoc
 // @Tags Roles
 // @Summary      Get Roles List
 // @Accept       json
