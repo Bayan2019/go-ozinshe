@@ -19,6 +19,24 @@ definitions:
       users:
         type: integer
     type: object
+  views.CreateRoleRequest:
+    properties:
+      age_categories:
+        type: integer
+      genres:
+        type: integer
+      projects:
+        type: integer
+      roles:
+        type: integer
+      title:
+        description: ID            int64  `json:"id"`
+        type: string
+      types:
+        type: integer
+      users:
+        type: integer
+    type: object
   views.CreateUserRequest:
     properties:
       email:
@@ -320,7 +338,100 @@ paths:
       summary: Get Roles List
       tags:
       - Roles
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/views.CreateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseId'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Update role
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create Role
+      tags:
+      - Roles
   /v1/roles/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseId'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Get roles
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Delete Role
+      tags:
+      - Roles
     get:
       consumes:
       - application/json
@@ -342,6 +453,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/database.Role'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
         "401":
           description: No token Middleware
           schema:
@@ -355,12 +470,12 @@ paths:
           schema:
             $ref: '#/definitions/views.ErrorResponse'
         "500":
-          description: Couldn't Get roles
+          description: Couldn't Get role
           schema:
             $ref: '#/definitions/views.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get Roles List
+      summary: Get Role
       tags:
       - Roles
     put:
@@ -410,7 +525,7 @@ paths:
             $ref: '#/definitions/views.ErrorResponse'
       security:
       - Bearer: []
-      summary: Get Roles List
+      summary: Update Role
       tags:
       - Roles
   /v1/users:

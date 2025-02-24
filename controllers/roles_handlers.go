@@ -8,6 +8,7 @@ import (
 
 	"github.com/Bayan2019/go-ozinshe/repositories/database"
 	"github.com/Bayan2019/go-ozinshe/views"
+	"github.com/go-chi/chi"
 )
 
 type RolesHandlers struct {
@@ -40,7 +41,6 @@ func (rh *RolesHandlers) GetAll(w http.ResponseWriter, r *http.Request, user vie
 			can_do = true
 		}
 	}
-
 	if !can_do {
 		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
 		return
@@ -55,18 +55,75 @@ func (rh *RolesHandlers) GetAll(w http.ResponseWriter, r *http.Request, user vie
 	views.RespondWithJSON(w, http.StatusOK, roles)
 }
 
+// Create godoc
+// @Tags Roles
+// @Summary      Create Role
+// @Accept       json
+// @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
+// @Param request body views.CreateRoleRequest true "User data"
+// @Success      200  {object} views.ResponseId "OK"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Update role"
+// @Router       /v1/roles [post]
+// @Security Bearer
+func (rh *RolesHandlers) Create(w http.ResponseWriter, r *http.Request, user views.User) {
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Roles == 3 {
+			can_do = true
+			break
+		}
+	}
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	crr := views.CreateRoleRequest{}
+
+	err := decoder.Decode(&crr)
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Error parsing JSON of CreateRoleRequest", err)
+		return
+	}
+
+	id, err := rh.DB.CreateRole(r.Context(), database.CreateRoleParams{
+		Title:         crr.Title,
+		Projects:      crr.Projects,
+		Genres:        crr.Genres,
+		AgeCategories: crr.AgeCategories,
+		Types:         crr.Types,
+		Users:         crr.Users,
+		Roles:         crr.Roles,
+	})
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't create roles", err)
+		return
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, views.ResponseId{
+		ID: int(id),
+	})
+}
+
 // Get godoc
 // @Tags Roles
-// @Summary      Get Roles List
+// @Summary      Get Role
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param id path int true "id"
 // @Success      200  {object} database.Role "OK"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
-// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get roles"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get role"
 // @Router       /v1/roles/{id} [get]
 // @Security Bearer
 func (rh *RolesHandlers) Get(w http.ResponseWriter, r *http.Request, user views.User) {
@@ -77,24 +134,29 @@ func (rh *RolesHandlers) Get(w http.ResponseWriter, r *http.Request, user views.
 			break
 		}
 	}
-
 	if !can_do {
 		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
 		return
 	}
 
-	roles, err := rh.DB.GetRoles(r.Context())
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
-		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get roles", err)
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
 		return
 	}
 
-	views.RespondWithJSON(w, http.StatusOK, roles)
+	role, err := rh.DB.GetRoleById(r.Context(), int64(id))
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get role", err)
+		return
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, role)
 }
 
 // Update godoc
 // @Tags Roles
-// @Summary      Get Roles List
+// @Summary      Update Role
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
@@ -122,7 +184,7 @@ func (rh *RolesHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 		return
 	}
 
-	id, err := strconv.Atoi(r.PathValue("id"))
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
 		return
@@ -153,4 +215,48 @@ func (rh *RolesHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+// Delete godoc
+// @Tags Roles
+// @Summary      Delete Role
+// @Accept       json
+// @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
+// @Param id path int true "id"
+// @Success      200  {object} views.ResponseId "OK"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get roles"
+// @Router       /v1/roles/{id} [delete]
+// @Security Bearer
+func (rh *RolesHandlers) Delete(w http.ResponseWriter, r *http.Request, user views.User) {
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Roles >= 2 {
+			can_do = true
+			break
+		}
+	}
+
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
+		return
+	}
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
+		return
+	}
+
+	err = rh.DB.DeleteRole(r.Context(), int64(id))
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get roles", err)
+		return
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, views.ResponseId{ID: id})
 }

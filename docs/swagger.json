@@ -275,6 +275,79 @@
                         }
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Create Role",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "User data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/views.CreateRoleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseId"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't Update role",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/v1/roles/{id}": {
@@ -293,7 +366,7 @@
                 "tags": [
                     "Roles"
                 ],
-                "summary": "Get Roles List",
+                "summary": "Get Role",
                 "parameters": [
                     {
                         "type": "string",
@@ -317,6 +390,12 @@
                             "$ref": "#/definitions/database.Role"
                         }
                     },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
                     "401": {
                         "description": "No token Middleware",
                         "schema": {
@@ -336,7 +415,7 @@
                         }
                     },
                     "500": {
-                        "description": "Couldn't Get roles",
+                        "description": "Couldn't Get role",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -358,7 +437,7 @@
                 "tags": [
                     "Roles"
                 ],
-                "summary": "Get Roles List",
+                "summary": "Update Role",
                 "parameters": [
                     {
                         "type": "string",
@@ -414,6 +493,77 @@
                     },
                     "500": {
                         "description": "Couldn't Update role",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Delete Role",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseId"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't Get roles",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -939,6 +1089,33 @@
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "types": {
+                    "type": "integer"
+                },
+                "users": {
+                    "type": "integer"
+                }
+            }
+        },
+        "views.CreateRoleRequest": {
+            "type": "object",
+            "properties": {
+                "age_categories": {
+                    "type": "integer"
+                },
+                "genres": {
+                    "type": "integer"
+                },
+                "projects": {
+                    "type": "integer"
+                },
+                "roles": {
+                    "type": "integer"
+                },
+                "title": {
+                    "description": "ID            int64  `json:\"id\"`",
                     "type": "string"
                 },
                 "types": {

@@ -9,6 +9,7 @@ import (
 	"github.com/Bayan2019/go-ozinshe/repositories"
 	"github.com/Bayan2019/go-ozinshe/repositories/database"
 	"github.com/Bayan2019/go-ozinshe/views"
+	"github.com/go-chi/chi"
 )
 
 type UsersHandlers struct {
@@ -161,7 +162,7 @@ func (uh *UsersHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 		return
 	}
 
-	id, err := strconv.Atoi(r.PathValue("id"))
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
 		return
@@ -208,13 +209,12 @@ func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user vi
 			break
 		}
 	}
-
 	if !can_do {
 		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
 		return
 	}
 
-	id, err := strconv.Atoi(r.PathValue("id"))
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
 		return
@@ -278,7 +278,6 @@ func (uh *UsersHandlers) GetUsers(w http.ResponseWriter, r *http.Request, user v
 			break
 		}
 	}
-
 	if !can_do {
 		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
 		return
@@ -322,7 +321,7 @@ func (uh *UsersHandlers) Delete(w http.ResponseWriter, r *http.Request, user vie
 		return
 	}
 
-	id, err := strconv.Atoi(r.PathValue("id"))
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
 	if err != nil {
 		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
 		return
