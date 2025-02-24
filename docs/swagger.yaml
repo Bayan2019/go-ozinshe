@@ -38,6 +38,19 @@ definitions:
       refresh_token:
         type: string
     type: object
+  views.UpdateProfileRequest:
+    properties:
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
 host: petstore.swagger.io
 info:
   contact:
@@ -219,6 +232,33 @@ paths:
           schema:
             $ref: '#/definitions/views.ErrorResponse'
       summary: Create user
+      tags:
+      - users
+  /v1/users/profile:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/views.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't update user data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      summary: Update user
       tags:
       - users
 securityDefinitions:

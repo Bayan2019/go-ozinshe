@@ -93,19 +93,18 @@ func main() {
 	v1Router := chi.NewRouter()
 
 	if configuration.ApiCfg.DB != nil {
-		usersRepository := repositories.NewUsersRepository(configuration.ApiCfg.Conn)
-		usersHandlers := controllers.NewUsersHandlers(usersRepository)
-
-		v1Router.Post("/users", usersHandlers.Create)
-
 		authHandlers := controllers.NewAuthHandlers(configuration.ApiCfg.DB, configuration.ApiCfg.JwtSecret)
 
 		v1Router.Post("/auth/sign-in", authHandlers.Login)
 		v1Router.Post("/auth/refresh", authHandlers.Refresh)
 		v1Router.Post("/auth/sign-out", authHandlers.Logout)
 
-		v1Router.Delete("/users", authHandlers.MiddlewareAuth(usersHandlers.Delete))
+		usersRepository := repositories.NewUsersRepository(configuration.ApiCfg.Conn)
+		usersHandlers := controllers.NewUsersHandlers(usersRepository)
 
+		v1Router.Post("/users", usersHandlers.Register)
+		v1Router.Put("/users/profile", authHandlers.MiddlewareAuth(usersHandlers.UpdateProfile))
+		v1Router.Delete("/users/profile", authHandlers.MiddlewareAuth(usersHandlers.DeleteProfile))
 	}
 
 	router.Mount("/v1", v1Router)

@@ -3,6 +3,8 @@ package repositories
 import (
 	"context"
 	"database/sql"
+
+	"github.com/Bayan2019/go-ozinshe/views"
 )
 
 type UsersRepository struct {
@@ -40,6 +42,29 @@ func (ur *UsersRepository) Create(ctx context.Context, cup CreateUserParams) (in
 	}
 
 	return id, tx.Commit()
+}
+
+func (ur *UsersRepository) UpdateProfile(ctx context.Context, upr views.UpdateProfileRequest) error {
+	tx, err := ur.Conn.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	qtx := ur.DB.WithTx(tx)
+
+	err = qtx.UpdateUser(ctx, UpdateUserParams{
+		ID:          upr.Id,
+		Name:        upr.Name,
+		Email:       upr.Email,
+		DateOfBirth: upr.DateOfBirth,
+		Phone:       upr.Phone,
+	})
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func (ur *UsersRepository) Delete(ctx context.Context, id int64) error {
