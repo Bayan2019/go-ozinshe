@@ -45,7 +45,7 @@ func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 			return
 		}
 
-		email, err := validateJWT(jwtToken, string(TokenTypeAccess))
+		email, err := validateJWT(jwtToken, ah.JwtSecret)
 		if err != nil {
 			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get email from token", err)
 			return
@@ -122,9 +122,9 @@ func (ah *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = checkPasswordHash(user.PasswordHash, signInReq.Password)
+	err = checkPasswordHash(signInReq.Password, user.PasswordHash)
 	if err != nil {
-		views.RespondWithError(w, http.StatusUnauthorized, "Incorrect email or password", err)
+		views.RespondWithError(w, http.StatusUnauthorized, "Incorrect password", err)
 		return
 	}
 
