@@ -202,6 +202,60 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/roles": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Roles"
+                ],
+                "summary": "Get Roles List",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/repositories.Role"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No token",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't Get roles",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/users": {
             "get": {
                 "security": [
@@ -360,6 +414,13 @@ const docTemplate = `{
                 ],
                 "summary": "Update user profile",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "With the Bearer started",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "User data",
                         "name": "request",
@@ -615,6 +676,35 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "repositories.Role": {
+            "type": "object",
+            "properties": {
+                "ageCategories": {
+                    "type": "integer"
+                },
+                "genres": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "projects": {
+                    "type": "integer"
+                },
+                "roles": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "types": {
+                    "type": "integer"
+                },
+                "users": {
+                    "type": "integer"
+                }
+            }
+        },
         "views.CreateUserRequest": {
             "type": "object",
             "properties": {

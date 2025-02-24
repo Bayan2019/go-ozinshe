@@ -26,7 +26,7 @@ func Connect2DB(dbPath string) error {
 	// https://github.com/libsql/libsql-client-go/#open-a-connection-to-sqld
 	// libsql://[your-database].turso.io?authToken=[your-auth-token]
 	if dbPath == "" {
-		return errors.New("No DataBase Path")
+		return errors.New("no DataBase Path")
 	}
 	db, err := sql.Open("sqlite3", dbPath)
 	// db, err := sql.Open("libsql", dbPath)

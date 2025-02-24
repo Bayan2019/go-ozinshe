@@ -111,6 +111,10 @@ func main() {
 		v1Router.Get("/users/profile", authHandlers.MiddlewareAuth(usersHandlers.GetProfile))
 		v1Router.Put("/users/profile", authHandlers.MiddlewareAuth(usersHandlers.UpdateProfile))
 		v1Router.Delete("/users/profile", authHandlers.MiddlewareAuth(usersHandlers.DeleteProfile))
+
+		rolesHandlers := controllers.NewRolesHandlers(configuration.ApiCfg.DB)
+
+		v1Router.Get("/roles", authHandlers.MiddlewareAuth(rolesHandlers.GetAll))
 	}
 
 	router.Mount("/v1", v1Router)

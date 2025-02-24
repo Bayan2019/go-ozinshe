@@ -51,6 +51,10 @@ func (uh *UsersHandlers) Register(w http.ResponseWriter, r *http.Request) {
 		Email:        cur.Email,
 		PasswordHash: hashedPassword,
 	})
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "couldn't create user", err)
+		return
+	}
 
 	views.RespondWithJSON(w, http.StatusCreated, views.NewResponseId(int(id)))
 }
@@ -151,7 +155,7 @@ func (uh *UsersHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 	}
 
 	if !can_do {
-		views.RespondWithError(w, http.StatusForbidden, "Don't have permission", errors.New("No Permission"))
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
 		return
 	}
 
@@ -203,7 +207,7 @@ func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user vi
 	}
 
 	if !can_do {
-		views.RespondWithError(w, http.StatusForbidden, "Don't have permission", errors.New("No Permission"))
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
 		return
 	}
 
@@ -272,7 +276,7 @@ func (uh *UsersHandlers) GetUsers(w http.ResponseWriter, r *http.Request, user v
 	}
 
 	if !can_do {
-		views.RespondWithError(w, http.StatusForbidden, "Don't have permission", errors.New("No Permission"))
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
 		return
 	}
 
@@ -308,7 +312,7 @@ func (uh *UsersHandlers) Delete(w http.ResponseWriter, r *http.Request, user vie
 	}
 
 	if !can_do {
-		views.RespondWithError(w, http.StatusForbidden, "Don't have permission", errors.New("No Permission"))
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
 		return
 	}
 
