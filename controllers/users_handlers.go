@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/Bayan2019/go-ozinshe/repositories"
+	"github.com/Bayan2019/go-ozinshe/repositories/database"
 	"github.com/Bayan2019/go-ozinshe/views"
 )
 
@@ -46,7 +47,7 @@ func (uh *UsersHandlers) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := uh.userRepo.Create(r.Context(), repositories.CreateUserParams{
+	id, err := uh.userRepo.Create(r.Context(), database.CreateUserParams{
 		Name:         cur.Name,
 		Email:        cur.Email,
 		PasswordHash: hashedPassword,

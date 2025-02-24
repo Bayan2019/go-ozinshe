@@ -5,7 +5,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/Bayan2019/go-ozinshe/repositories"
+	"github.com/Bayan2019/go-ozinshe/repositories/database"
 	_ "github.com/mattn/go-sqlite3"
 	// _ "github.com/tursodatabase/libsql-client-go/libsql"
 )
@@ -17,7 +17,7 @@ var ApiCfg *ApiConfiguration
 
 type ApiConfiguration struct {
 	Conn      *sql.DB
-	DB        *repositories.Queries
+	DB        *database.Queries
 	Dir       string
 	JwtSecret string
 }
@@ -34,7 +34,7 @@ func Connect2DB(dbPath string) error {
 		return err
 	}
 
-	dbQueries := repositories.New(db)
+	dbQueries := database.New(db)
 	ApiCfg = &ApiConfiguration{
 		Conn: db,
 		DB:   dbQueries,

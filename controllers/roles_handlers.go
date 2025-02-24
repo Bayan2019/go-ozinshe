@@ -4,15 +4,15 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/Bayan2019/go-ozinshe/repositories"
+	"github.com/Bayan2019/go-ozinshe/repositories/database"
 	"github.com/Bayan2019/go-ozinshe/views"
 )
 
 type RolesHandlers struct {
-	DB *repositories.Queries
+	DB *database.Queries
 }
 
-func NewRolesHandlers(db *repositories.Queries) *RolesHandlers {
+func NewRolesHandlers(db *database.Queries) *RolesHandlers {
 	return &RolesHandlers{
 		DB: db,
 	}

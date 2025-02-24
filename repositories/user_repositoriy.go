@@ -4,22 +4,23 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/Bayan2019/go-ozinshe/repositories/database"
 	"github.com/Bayan2019/go-ozinshe/views"
 )
 
 type UsersRepository struct {
 	Conn *sql.DB
-	DB   *Queries
+	DB   *database.Queries
 }
 
 func NewUsersRepository(db *sql.DB) *UsersRepository {
 	return &UsersRepository{
 		Conn: db,
-		DB:   New(db),
+		DB:   database.New(db),
 	}
 }
 
-func (ur *UsersRepository) Create(ctx context.Context, cup CreateUserParams) (int64, error) {
+func (ur *UsersRepository) Create(ctx context.Context, cup database.CreateUserParams) (int64, error) {
 	tx, err := ur.Conn.Begin()
 	if err != nil {
 		return 0, err
@@ -33,7 +34,7 @@ func (ur *UsersRepository) Create(ctx context.Context, cup CreateUserParams) (in
 		return 0, err
 	}
 
-	err = qtx.AddRole2User(ctx, AddRole2UserParams{
+	err = qtx.AddRole2User(ctx, database.AddRole2UserParams{
 		UserID: id,
 		RoleID: 2,
 	})
@@ -53,7 +54,7 @@ func (ur *UsersRepository) UpdateProfile(ctx context.Context, id int64, upr view
 
 	qtx := ur.DB.WithTx(tx)
 
-	err = qtx.UpdateUser(ctx, UpdateUserParams{
+	err = qtx.UpdateUser(ctx, database.UpdateUserParams{
 		ID:          id,
 		Name:        upr.Name,
 		Email:       upr.Email,
@@ -76,7 +77,7 @@ func (ur *UsersRepository) Update(ctx context.Context, id int64, uur views.Updat
 
 	qtx := ur.DB.WithTx(tx)
 
-	err = qtx.UpdateUser(ctx, UpdateUserParams{
+	err = qtx.UpdateUser(ctx, database.UpdateUserParams{
 		ID:          id,
 		Name:        uur.Name,
 		Email:       uur.Email,
@@ -88,7 +89,7 @@ func (ur *UsersRepository) Update(ctx context.Context, id int64, uur views.Updat
 	}
 
 	for _, role_id := range uur.RoleIds {
-		err = qtx.AddRole2User(ctx, AddRole2UserParams{
+		err = qtx.AddRole2User(ctx, database.AddRole2UserParams{
 			UserID: id,
 			RoleID: role_id,
 		})

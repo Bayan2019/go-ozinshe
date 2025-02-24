@@ -3,7 +3,7 @@
 //   sqlc v1.28.0
 // source: permissions.sql
 
-package repositories
+package database
 
 import (
 	"context"

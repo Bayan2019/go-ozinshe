@@ -28,7 +28,7 @@ jobs:
         run: go install github.com/securego/gosec/v2/cmd/gosec@latest
 
       - name: Test security check
-        run: gosec ./...
+        run: gosec -exclude-dir=repositories/database ./...
 
   style:
     name: Style

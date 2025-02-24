@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Bayan2019/go-ozinshe/configuration"
 	"github.com/Bayan2019/go-ozinshe/controllers"
@@ -40,7 +41,11 @@ import (
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
 func main() {
-	godotenv.Load(".env")
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println("warning: assuming default configuration. .env unreadable: %v", err)
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -48,7 +53,7 @@ func main() {
 
 	dbURL := os.Getenv("DATABASE_URL")
 	// fmt.Println(dbURL)
-	err := configuration.Connect2DB(dbURL)
+	err = configuration.Connect2DB(dbURL)
 	if err != nil {
 		log.Println("DATABASE_URL environment variable is not set")
 		log.Println("Running without CRUD endpoints")
@@ -120,9 +125,9 @@ func main() {
 	router.Mount("/v1", v1Router)
 
 	srv := &http.Server{
-		Addr:    ":" + port,
-		Handler: router,
-		// ReadHeaderTimeout: time.Second * 5,
+		Addr:              ":" + port,
+		Handler:           router,
+		ReadHeaderTimeout: time.Second * 10,
 	}
 
 	log.Printf("Serving on: http://localhost:%s\n", port)

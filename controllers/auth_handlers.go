@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Bayan2019/go-ozinshe/repositories"
+	"github.com/Bayan2019/go-ozinshe/repositories/database"
 	"github.com/Bayan2019/go-ozinshe/views"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
@@ -24,11 +24,11 @@ const (
 )
 
 type AuthHandlers struct {
-	DB        *repositories.Queries
+	DB        *database.Queries
 	JwtSecret string
 }
 
-func NewAuthHandlers(db *repositories.Queries, jwtSecret string) *AuthHandlers {
+func NewAuthHandlers(db *database.Queries, jwtSecret string) *AuthHandlers {
 	return &AuthHandlers{
 		DB:        db,
 		JwtSecret: jwtSecret,
@@ -144,7 +144,7 @@ func (ah *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = ah.DB.CreateRefreshToken(r.Context(), repositories.CreateRefreshTokenParams{
+	err = ah.DB.CreateRefreshToken(r.Context(), database.CreateRefreshTokenParams{
 		Token:     refreshToken,
 		UserID:    user.ID,
 		ExpiresAt: time.Now().UTC().Add(time.Hour * 24 * 60),
