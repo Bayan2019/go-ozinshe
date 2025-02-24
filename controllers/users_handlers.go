@@ -190,7 +190,7 @@ func (uh *UsersHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user views.User) {
 	can_do := false
 	for _, role := range user.Roles {
-		if role.Users == 3 {
+		if role.Users >= 2 {
 			can_do = true
 		}
 	}
@@ -245,18 +245,36 @@ func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user vi
 
 // Delete godoc
 // @Tags Users
-// @Summary      Get Users
+// @Summary      Get Users List
 // @Accept       json
 // @Produce      json
-// @Success      200  {object} views.User "OK"
+// @Success      200  {array} views.User "OK"
 // @Failure   	 401  {object} views.ErrorResponse "No token"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User"
-// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get user"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get users"
 // @Router       /v1/users [get]
 // @Security Bearer
 func (uh *UsersHandlers) GetUsers(w http.ResponseWriter, r *http.Request, user views.User) {
-	views.RespondWithJSON(w, http.StatusOK, user)
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Users >= 2 {
+			can_do = true
+		}
+	}
+
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "Don't have permission", errors.New("No Permission"))
+		return
+	}
+
+	users, err := uh.userRepo.DB.GetUsers(r.Context())
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get users", err)
+		return
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, users)
 }
 
 // Delete godoc

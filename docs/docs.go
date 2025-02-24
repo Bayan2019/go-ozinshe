@@ -218,12 +218,15 @@ const docTemplate = `{
                 "tags": [
                     "Users"
                 ],
-                "summary": "Get Users",
+                "summary": "Get Users List",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/views.User"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/views.User"
+                            }
                         }
                     },
                     "401": {
@@ -245,7 +248,7 @@ const docTemplate = `{
                         }
                     },
                     "500": {
-                        "description": "Couldn't Get user",
+                        "description": "Couldn't Get users",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
