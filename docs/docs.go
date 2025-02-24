@@ -213,7 +213,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Create user",
+                "summary": "Create user (Register)",
                 "parameters": [
                     {
                         "description": "User data",
@@ -245,8 +245,10 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/v1/users/profile": {
+            "get": {
                 "security": [
                     {
                         "Bearer": []
@@ -261,33 +263,34 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Delete user",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "User id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "Get user profile",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/views.ResponseId"
+                            "$ref": "#/definitions/views.User"
+                        }
+                    },
+                    "401": {
+                        "description": "No token",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
                         }
                     },
                     "500": {
-                        "description": "Couldn't delete user",
+                        "description": "Couldn't Get user",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
                     }
                 }
-            }
-        },
-        "/v1/users/profile": {
+            },
             "put": {
                 "security": [
                     {
@@ -303,7 +306,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Update user",
+                "summary": "Update user profile",
                 "parameters": [
                     {
                         "description": "User data",
@@ -325,8 +328,63 @@ const docTemplate = `{
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
                     },
+                    "401": {
+                        "description": "No token",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
                     "500": {
                         "description": "Couldn't update user data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete user profile",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseId"
+                        }
+                    },
+                    "401": {
+                        "description": "No token",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't delete user",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -374,6 +432,35 @@ const docTemplate = `{
                 }
             }
         },
+        "views.Role": {
+            "type": "object",
+            "properties": {
+                "age_categories": {
+                    "type": "integer"
+                },
+                "genres": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "projects": {
+                    "type": "integer"
+                },
+                "roles": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "types": {
+                    "type": "integer"
+                },
+                "users": {
+                    "type": "integer"
+                }
+            }
+        },
         "views.SignInRequest": {
             "type": "object",
             "properties": {
@@ -413,6 +500,32 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                }
+            }
+        },
+        "views.User": {
+            "type": "object",
+            "properties": {
+                "date_of_birth": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "phone": {
+                    "type": "string"
+                },
+                "roles": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/views.Role"
+                    }
                 }
             }
         }

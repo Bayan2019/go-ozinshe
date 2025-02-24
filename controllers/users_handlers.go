@@ -21,7 +21,7 @@ func NewUsersHandlers(repo *repositories.UsersRepository) *UsersHandlers {
 
 // Create godoc
 // @Tags users
-// @Summary      Create user
+// @Summary      Create user (Register)
 // @Accept       json
 // @Produce      json
 // @Param request body views.CreateUserRequest true "User data"
@@ -56,12 +56,14 @@ func (uh *UsersHandlers) Register(w http.ResponseWriter, r *http.Request) {
 
 // Create godoc
 // @Tags users
-// @Summary      Update user
+// @Summary      Update user profile
 // @Accept       json
 // @Produce      json
 // @Param request body views.UpdateProfileRequest true "User data"
 // @Success      200  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
+// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't update user data"
 // @Router       /v1/users/profile [put]
 // @Security Bearer
@@ -91,13 +93,29 @@ func (uh *UsersHandlers) UpdateProfile(w http.ResponseWriter, r *http.Request, u
 
 // Delete godoc
 // @Tags users
-// @Summary      Delete user
+// @Summary      Get user profile
 // @Accept       json
 // @Produce      json
-// @Param id path int true "User id"
+// @Success      200  {object} views.User "OK"
+// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get user"
+// @Router       /v1/users/profile [get]
+// @Security Bearer
+func (uh *UsersHandlers) GetProfile(w http.ResponseWriter, r *http.Request, user views.User) {
+	views.RespondWithJSON(w, http.StatusOK, user)
+}
+
+// Delete godoc
+// @Tags users
+// @Summary      Delete user profile
+// @Accept       json
+// @Produce      json
 // @Success      200  {object} views.ResponseId "OK"
+// @Failure   	 401  {object} views.ErrorResponse "No token"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't delete user"
-// @Router       /v1/users [delete]
+// @Router       /v1/users/profile [delete]
 // @Security Bearer
 func (uh *UsersHandlers) DeleteProfile(w http.ResponseWriter, r *http.Request, user views.User) {
 	err := uh.userRepo.DB.DeleteUser(r.Context(), user.Id)

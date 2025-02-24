@@ -24,6 +24,25 @@ definitions:
       message:
         type: string
     type: object
+  views.Role:
+    properties:
+      age_categories:
+        type: integer
+      genres:
+        type: integer
+      id:
+        type: integer
+      projects:
+        type: integer
+      roles:
+        type: integer
+      title:
+        type: string
+      types:
+        type: integer
+      users:
+        type: integer
+    type: object
   views.SignInRequest:
     properties:
       email:
@@ -50,6 +69,23 @@ definitions:
         type: string
       phone:
         type: string
+    type: object
+  views.User:
+    properties:
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+      roles:
+        items:
+          $ref: '#/definitions/views.Role'
+        type: array
     type: object
 host: petstore.swagger.io
 info:
@@ -181,31 +217,6 @@ paths:
       tags:
       - Auth
   /v1/users:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: User id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/views.ResponseId'
-        "500":
-          description: Couldn't delete user
-          schema:
-            $ref: '#/definitions/views.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Delete user
-      tags:
-      - users
     post:
       consumes:
       - application/json
@@ -231,10 +242,64 @@ paths:
           description: Couldn't hash password
           schema:
             $ref: '#/definitions/views.ErrorResponse'
-      summary: Create user
+      summary: Create user (Register)
       tags:
       - users
   /v1/users/profile:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseId'
+        "401":
+          description: No token
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't delete user
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Delete user profile
+      tags:
+      - users
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.User'
+        "401":
+          description: No token
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Get user
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get user profile
+      tags:
+      - users
     put:
       consumes:
       - application/json
@@ -254,13 +319,21 @@ paths:
           description: Invalid data
           schema:
             $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
         "500":
           description: Couldn't update user data
           schema:
             $ref: '#/definitions/views.ErrorResponse'
       security:
       - Bearer: []
-      summary: Update user
+      summary: Update user profile
       tags:
       - users
 securityDefinitions:

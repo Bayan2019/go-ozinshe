@@ -65,7 +65,7 @@ func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 
 		rRoles, err := ah.DB.GetRolesOfUser(r.Context(), user.ID)
 		if err != nil {
-			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get user", err)
+			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get roles", err)
 			return
 		}
 
