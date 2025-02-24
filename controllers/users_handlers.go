@@ -64,6 +64,7 @@ func (uh *UsersHandlers) Register(w http.ResponseWriter, r *http.Request) {
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't update user data"
 // @Router       /v1/users/profile [put]
+// @Security Bearer
 func (uh *UsersHandlers) UpdateProfile(w http.ResponseWriter, r *http.Request, user views.User) {
 	decoder := json.NewDecoder(r.Body)
 	upr := views.UpdateProfileRequest{}

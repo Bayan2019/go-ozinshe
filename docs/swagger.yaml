@@ -258,6 +258,8 @@ paths:
           description: Couldn't update user data
           schema:
             $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
       summary: Update user
       tags:
       - users

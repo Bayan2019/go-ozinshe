@@ -289,6 +289,11 @@ const docTemplate = `{
         },
         "/v1/users/profile": {
             "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
                 "consumes": [
                     "application/json"
                 ],
