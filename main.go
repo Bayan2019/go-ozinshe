@@ -120,7 +120,8 @@ func main() {
 		rolesHandlers := controllers.NewRolesHandlers(configuration.ApiCfg.DB)
 
 		v1Router.Get("/roles", authHandlers.MiddlewareAuth(rolesHandlers.GetAll))
-		v1Router.Get("/roles/id", authHandlers.MiddlewareAuth(rolesHandlers.Get))
+		v1Router.Get("/roles/{id}", authHandlers.MiddlewareAuth(rolesHandlers.Get))
+		v1Router.Get("/roles/{id}", authHandlers.MiddlewareAuth(rolesHandlers.Update))
 	}
 
 	router.Mount("/v1", v1Router)

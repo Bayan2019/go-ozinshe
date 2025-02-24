@@ -88,6 +88,24 @@ definitions:
       phone:
         type: string
     type: object
+  views.UpdateRoleRequest:
+    properties:
+      age_categories:
+        type: integer
+      genres:
+        type: integer
+      projects:
+        type: integer
+      roles:
+        type: integer
+      title:
+        description: ID            int64  `json:"id"`
+        type: string
+      types:
+        type: integer
+      users:
+        type: integer
+    type: object
   views.UpdateUserRequest:
     properties:
       date_of_birth:
@@ -338,6 +356,56 @@ paths:
             $ref: '#/definitions/views.ErrorResponse'
         "500":
           description: Couldn't Get roles
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get Roles List
+      tags:
+      - Roles
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/views.UpdateRoleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Update role
           schema:
             $ref: '#/definitions/views.ErrorResponse'
       security:
