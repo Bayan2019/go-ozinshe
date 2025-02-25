@@ -1,5 +1,12 @@
 basePath: /v2
 definitions:
+  database.AgeCategory:
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
   database.Genre:
     properties:
       id:
@@ -25,6 +32,11 @@ definitions:
         type: integer
       users:
         type: integer
+    type: object
+  views.CreateAgeCategoryRequest:
+    properties:
+      title:
+        type: string
     type: object
   views.CreateGenreRequest:
     properties:
@@ -104,6 +116,11 @@ definitions:
       access_token:
         type: string
       refresh_token:
+        type: string
+    type: object
+  views.UpdateAgeCategoryRequest:
+    properties:
+      title:
         type: string
     type: object
   views.UpdateGenreRequest:
@@ -220,6 +237,236 @@ paths:
       summary: Saying hello
       tags:
       - Tests
+  /v1/age-categories:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.AgeCategory'
+            type: array
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Get AgeCategories
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get AgeCategories List
+      tags:
+      - AgeCategories
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: AgeCategory data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/views.CreateAgeCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseId'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Create AgeCategory
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create AgeCategory
+      tags:
+      - AgeCategories
+  /v1/age-categories/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseId'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't delete AgeCategory
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Delete AgeCategory
+      tags:
+      - AgeCategories
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.AgeCategory'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Get AgeCategory
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get AgeCategory
+      tags:
+      - AgeCategories
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: AgeCategory data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/views.UpdateAgeCategoryRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Update AgeCategory
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Update AgeCategory
+      tags:
+      - AgeCategories
   /v1/auth/refresh:
     post:
       consumes:
@@ -373,7 +620,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: OK
           schema:
             $ref: '#/definitions/views.ResponseId'
@@ -447,6 +694,52 @@ paths:
       security:
       - Bearer: []
       summary: Delete Genre
+      tags:
+      - Genres
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Genre'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Get genre
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get Genre
       tags:
       - Genres
     put:
@@ -557,7 +850,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: OK
           schema:
             $ref: '#/definitions/views.ResponseId'
@@ -782,7 +1075,7 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
+        "201":
           description: OK
           schema:
             $ref: '#/definitions/views.ResponseId'

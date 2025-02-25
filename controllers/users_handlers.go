@@ -28,7 +28,7 @@ func NewUsersHandlers(repo *repositories.UsersRepository) *UsersHandlers {
 // @Accept       json
 // @Produce      json
 // @Param request body views.CreateUserRequest true "User data"
-// @Success      200  {object} views.ResponseId "OK"
+// @Success      201  {object} views.ResponseId "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't hash password"
 // @Router       /v1/users [post]

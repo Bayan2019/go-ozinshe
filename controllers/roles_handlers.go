@@ -62,7 +62,7 @@ func (rh *RolesHandlers) GetAll(w http.ResponseWriter, r *http.Request, user vie
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param request body views.CreateRoleRequest true "Role data"
-// @Success      200  {object} views.ResponseId "OK"
+// @Success      201  {object} views.ResponseId "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
@@ -106,7 +106,7 @@ func (rh *RolesHandlers) Create(w http.ResponseWriter, r *http.Request, user vie
 		return
 	}
 
-	views.RespondWithJSON(w, http.StatusOK, views.ResponseId{
+	views.RespondWithJSON(w, http.StatusCreated, views.ResponseId{
 		ID: int(id),
 	})
 }
