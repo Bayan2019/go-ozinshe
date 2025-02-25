@@ -154,6 +154,7 @@ func main() {
 		v1Router.Post("/projects/images", authHandlers.MiddlewareAuth(imagesHandlers.Upload))
 		v1Router.Get("/projects/images/{id}", authHandlers.MiddlewareAuth(imagesHandlers.Get))
 		v1Router.Get("/projects/images/show/{id}", authHandlers.MiddlewareAuth(imagesHandlers.Display))
+		v1Router.Delete("/projects/images/{id}", authHandlers.MiddlewareAuth(imagesHandlers.Delete))
 	}
 
 	router.Mount("/v1", v1Router)
