@@ -33,6 +33,13 @@ definitions:
       users:
         type: integer
     type: object
+  database.Type:
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+    type: object
   views.CreateAgeCategoryRequest:
     properties:
       title:
@@ -60,6 +67,11 @@ definitions:
         type: integer
       users:
         type: integer
+    type: object
+  views.CreateTypeRequest:
+    properties:
+      title:
+        type: string
     type: object
   views.CreateUserRequest:
     properties:
@@ -157,6 +169,11 @@ definitions:
         type: integer
       users:
         type: integer
+    type: object
+  views.UpdateTypeRequest:
+    properties:
+      title:
+        type: string
     type: object
   views.UpdateUserRequest:
     properties:
@@ -1022,6 +1039,236 @@ paths:
       summary: Update Role
       tags:
       - Roles
+  /v1/types:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/database.Type'
+            type: array
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Get Types
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get Types List
+      tags:
+      - Types
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Type data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/views.CreateTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseId'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Create Type
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create Type
+      tags:
+      - Types
+  /v1/types/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseId'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't delete Type
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Delete Type
+      tags:
+      - Types
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/database.Type'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Get Type
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get Type
+      tags:
+      - Types
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Type data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/views.UpdateTypeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Update Type
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Update Type
+      tags:
+      - Types
   /v1/users:
     get:
       consumes:
