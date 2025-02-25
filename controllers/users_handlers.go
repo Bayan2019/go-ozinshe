@@ -198,7 +198,7 @@ func (uh *UsersHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
-// @Failure   	 500  {object} views.ErrorResponse "Couldn't get roles"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't get user"
 // @Router       /v1/users/{id} [get]
 // @Security Bearer
 func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user views.User) {

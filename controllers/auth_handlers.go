@@ -100,7 +100,7 @@ func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 // @Summary      Sign In
 // @Accept       json
 // @Produce      json
-// @Param request body views.SignInRequest true "Request body"
+// @Param request body views.SignInRequest true "Authentication"
 // @Success      200  {object} views.TokensResponse "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid Data"
 // @Failure   	 401  {object} views.ErrorResponse "Incorrect email or password"
@@ -208,7 +208,7 @@ func (ah *AuthHandlers) Refresh(w http.ResponseWriter, r *http.Request) {
 // @Param Authorization header string true "Bearer AccessToken"
 // @Success      204
 // @Failure   	 400  {object} views.ErrorResponse "Couldn't find token"
-// @Failure   	 500  {object} views.ErrorResponse "Couldn't create tokens"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't revoke session"
 // @Router       /v1/auth/sign-out [post]
 func (ah *AuthHandlers) Logout(w http.ResponseWriter, r *http.Request) {
 	refreshToken, err := getBearerToken(r.Header)

@@ -61,13 +61,13 @@ func (rh *RolesHandlers) GetAll(w http.ResponseWriter, r *http.Request, user vie
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
-// @Param request body views.CreateRoleRequest true "User data"
+// @Param request body views.CreateRoleRequest true "Role data"
 // @Success      200  {object} views.ResponseId "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
-// @Failure   	 500  {object} views.ErrorResponse "Couldn't Update role"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Create role"
 // @Router       /v1/roles [post]
 // @Security Bearer
 func (rh *RolesHandlers) Create(w http.ResponseWriter, r *http.Request, user views.User) {
@@ -161,7 +161,7 @@ func (rh *RolesHandlers) Get(w http.ResponseWriter, r *http.Request, user views.
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param id path int true "id"
-// @Param request body views.UpdateRoleRequest true "User data"
+// @Param request body views.UpdateRoleRequest true "Role data"
 // @Success      200  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
@@ -178,7 +178,6 @@ func (rh *RolesHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 			break
 		}
 	}
-
 	if !can_do {
 		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
 		return
@@ -229,7 +228,7 @@ func (rh *RolesHandlers) Update(w http.ResponseWriter, r *http.Request, user vie
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
-// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get roles"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't delete role"
 // @Router       /v1/roles/{id} [delete]
 // @Security Bearer
 func (rh *RolesHandlers) Delete(w http.ResponseWriter, r *http.Request, user views.User) {
@@ -240,7 +239,6 @@ func (rh *RolesHandlers) Delete(w http.ResponseWriter, r *http.Request, user vie
 			break
 		}
 	}
-
 	if !can_do {
 		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
 		return
@@ -254,7 +252,7 @@ func (rh *RolesHandlers) Delete(w http.ResponseWriter, r *http.Request, user vie
 
 	err = rh.DB.DeleteRole(r.Context(), int64(id))
 	if err != nil {
-		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get roles", err)
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't delete roles", err)
 		return
 	}
 
