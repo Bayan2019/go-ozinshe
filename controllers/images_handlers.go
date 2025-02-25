@@ -30,7 +30,7 @@ func NewImagesHandlers(db *database.Queries, dir string) *ImagesHandlers {
 
 // Display godoc
 // @Tags Images
-// @Summary      Create Role
+// @Summary      Display Image
 // @Accept       json
 // @Produce      application/octet-stream
 // @Param Authorization header string true "Bearer AccessToken"
@@ -41,7 +41,7 @@ func NewImagesHandlers(db *database.Queries, dir string) *ImagesHandlers {
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "No Permission" "Couldn't get User Middleware"
-// @Router       /v1/projects/images/{id} [get]
+// @Router       /v1/projects/images/show/{id} [get]
 // @Security Bearer
 func (ih *ImagesHandlers) Display(w http.ResponseWriter, r *http.Request, user views.User) {
 	can_do := false
@@ -66,7 +66,7 @@ func (ih *ImagesHandlers) Display(w http.ResponseWriter, r *http.Request, user v
 
 // Display godoc
 // @Tags Images
-// @Summary      Create Role
+// @Summary      Get Image
 // @Accept       json
 // @Produce      application/octet-stream
 // @Param Authorization header string true "Bearer AccessToken"
@@ -117,7 +117,7 @@ func (ih *ImagesHandlers) Get(w http.ResponseWriter, r *http.Request, user views
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
-// @Failure   	 500  {object} views.ErrorResponse "can't read the image"
+// @Failure   	 500  {object} views.ErrorResponse "can't create image"
 // @Router       /v1/projects/images [post]
 // @Security Bearer
 func (ih *ImagesHandlers) Upload(w http.ResponseWriter, r *http.Request, user views.User) {
