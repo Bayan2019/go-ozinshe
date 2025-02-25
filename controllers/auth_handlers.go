@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -231,7 +230,7 @@ func getBearerToken(headers http.Header) (string, error) {
 	// Auth information will come into our server
 	// in the Authorization header.
 	authHeader := headers.Get("Authorization")
-	fmt.Println(authHeader)
+	// fmt.Println(authHeader)
 	if authHeader == "" {
 		// If the header doesn't exist, return an error.
 		return "", errors.New("no auth header included in request")

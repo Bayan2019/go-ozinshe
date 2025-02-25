@@ -151,8 +151,9 @@ func main() {
 
 		imagesHandlers := controllers.NewImagesHandlers(configuration.ApiCfg.DB, configuration.ApiCfg.Dir)
 
-		v1Router.Post("/projects/images", authHandlers.MiddlewareAuth(imagesHandlers.UploadImage))
+		v1Router.Post("/projects/images", authHandlers.MiddlewareAuth(imagesHandlers.Upload))
 		v1Router.Get("/projects/images/{id}", authHandlers.MiddlewareAuth(imagesHandlers.Get))
+		v1Router.Get("/projects/images/show/{id}", authHandlers.MiddlewareAuth(imagesHandlers.Display))
 	}
 
 	router.Mount("/v1", v1Router)
