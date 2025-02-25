@@ -148,6 +148,11 @@ func main() {
 		v1Router.Get("/types/{id}", authHandlers.MiddlewareAuth(typesHandlers.Get))
 		v1Router.Put("/types/{id}", authHandlers.MiddlewareAuth(typesHandlers.Update))
 		v1Router.Put("/types/{id}", authHandlers.MiddlewareAuth(typesHandlers.Delete))
+
+		imagesHandlers := controllers.NewImagesHandlers(configuration.ApiCfg.DB, configuration.ApiCfg.Dir)
+
+		v1Router.Post("/projects/images", authHandlers.MiddlewareAuth(imagesHandlers.UploadImage))
+		v1Router.Get("/projects/images/{id}", authHandlers.MiddlewareAuth(imagesHandlers.Get))
 	}
 
 	router.Mount("/v1", v1Router)
