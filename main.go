@@ -140,6 +140,14 @@ func main() {
 		v1Router.Get("/age-categories/{id}", authHandlers.MiddlewareAuth(ageCategoriesHandlers.Get))
 		v1Router.Put("/age-categories/{id}", authHandlers.MiddlewareAuth(ageCategoriesHandlers.Update))
 		v1Router.Put("/age-categories/{id}", authHandlers.MiddlewareAuth(ageCategoriesHandlers.Delete))
+
+		typesHandlers := controllers.NewTypesHandlers(configuration.ApiCfg.DB)
+
+		v1Router.Get("/types", authHandlers.MiddlewareAuth(typesHandlers.GetAll))
+		v1Router.Post("/types", authHandlers.MiddlewareAuth(typesHandlers.Create))
+		v1Router.Get("/types/{id}", authHandlers.MiddlewareAuth(typesHandlers.Get))
+		v1Router.Put("/types/{id}", authHandlers.MiddlewareAuth(typesHandlers.Update))
+		v1Router.Put("/types/{id}", authHandlers.MiddlewareAuth(typesHandlers.Delete))
 	}
 
 	router.Mount("/v1", v1Router)
