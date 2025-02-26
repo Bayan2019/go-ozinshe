@@ -117,3 +117,34 @@ func (pr *ProjectsRepository) Update(ctx context.Context, id int64, upr views.Up
 
 	return tx.Commit()
 }
+
+func (pr *ProjectsRepository) UploadCover(ctx context.Context, project int64, cover string) error {
+	tx, err := pr.Conn.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	qtx := pr.DB.WithTx(tx)
+
+	err = qtx.AddImage2Movie(ctx, database.AddImage2MovieParams{
+		ID:        cover,
+		ProjectID: project,
+	})
+	if err != nil {
+		return err
+	}
+
+	err = qtx.SetCover(ctx, database.SetCoverParams{
+		ID: project,
+		Cover: sql.NullString{
+			String: cover,
+			Valid:  true,
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
