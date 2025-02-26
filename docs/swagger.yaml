@@ -810,6 +810,58 @@ paths:
       tags:
       - Genres
   /v1/projects/images:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: project_id
+        in: formData
+        name: project_id
+        required: true
+        type: integer
+      - description: image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseMessage'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: can't create image
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create Image
+      tags:
+      - Images
+  /v1/projects/images/{id}:
     delete:
       consumes:
       - application/json
@@ -853,7 +905,7 @@ paths:
             $ref: '#/definitions/views.ErrorResponse'
       security:
       - Bearer: []
-      summary: Delete Images
+      summary: Delete Image
       tags:
       - Images
     get:
@@ -898,57 +950,6 @@ paths:
       security:
       - Bearer: []
       summary: Get Image
-      tags:
-      - Images
-    post:
-      consumes:
-      - multipart/form-data
-      parameters:
-      - description: Bearer AccessToken
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: poster_id
-        in: formData
-        name: poster_id
-        required: true
-        type: integer
-      - description: image
-        in: formData
-        name: poster
-        required: true
-        type: file
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/views.ResponseMessage'
-        "400":
-          description: Invalid data
-          schema:
-            $ref: '#/definitions/views.ErrorResponse'
-        "401":
-          description: No token Middleware
-          schema:
-            $ref: '#/definitions/views.ErrorResponse'
-        "403":
-          description: No Permission
-          schema:
-            $ref: '#/definitions/views.ErrorResponse'
-        "404":
-          description: Not found User Middleware
-          schema:
-            $ref: '#/definitions/views.ErrorResponse'
-        "500":
-          description: can't create image
-          schema:
-            $ref: '#/definitions/views.ErrorResponse'
-      security:
-      - Bearer: []
-      summary: Create Images
       tags:
       - Images
   /v1/projects/images/show/{id}:
@@ -996,6 +997,204 @@ paths:
       summary: Display Image
       tags:
       - Images
+  /v1/projects/videos:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: project_id
+        in: formData
+        name: project_id
+        required: true
+        type: integer
+      - description: season
+        in: formData
+        name: season
+        required: true
+        type: integer
+      - description: serie
+        in: formData
+        name: serie
+        required: true
+        type: integer
+      - description: video
+        in: formData
+        name: video
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseMessage'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: can't create video
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create Video
+      tags:
+      - Videos
+  /v1/projects/videos/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/views.ResponseMessage'
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Error deleting file
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Delete Video
+      tags:
+      - Videos
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: can't read the video
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get Video
+      tags:
+      - Videos
+  /v1/projects/videos/play/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid data
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: No Permission" "Couldn't get User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Display Video
+      tags:
+      - Videos
   /v1/roles:
     get:
       consumes:

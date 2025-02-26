@@ -935,74 +935,6 @@ const docTemplate = `{
             }
         },
         "/v1/projects/images": {
-            "get": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/octet-stream"
-                ],
-                "tags": [
-                    "Images"
-                ],
-                "summary": "Get Image",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer AccessToken",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Invalid data",
-                        "schema": {
-                            "$ref": "#/definitions/views.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "No token Middleware",
-                        "schema": {
-                            "$ref": "#/definitions/views.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "No Permission",
-                        "schema": {
-                            "$ref": "#/definitions/views.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not found User Middleware",
-                        "schema": {
-                            "$ref": "#/definitions/views.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "can't read the image",
-                        "schema": {
-                            "$ref": "#/definitions/views.ErrorResponse"
-                        }
-                    }
-                }
-            },
             "post": {
                 "security": [
                     {
@@ -1018,7 +950,7 @@ const docTemplate = `{
                 "tags": [
                     "Images"
                 ],
-                "summary": "Create Images",
+                "summary": "Create Image",
                 "parameters": [
                     {
                         "type": "string",
@@ -1029,15 +961,15 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "poster_id",
-                        "name": "poster_id",
+                        "description": "project_id",
+                        "name": "project_id",
                         "in": "formData",
                         "required": true
                     },
                     {
                         "type": "file",
                         "description": "image",
-                        "name": "poster",
+                        "name": "image",
                         "in": "formData",
                         "required": true
                     }
@@ -1075,77 +1007,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "can't create image",
-                        "schema": {
-                            "$ref": "#/definitions/views.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "security": [
-                    {
-                        "Bearer": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Images"
-                ],
-                "summary": "Delete Images",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Bearer AccessToken",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "id",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/views.ResponseMessage"
-                        }
-                    },
-                    "400": {
-                        "description": "Invalid data",
-                        "schema": {
-                            "$ref": "#/definitions/views.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "No token Middleware",
-                        "schema": {
-                            "$ref": "#/definitions/views.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "No Permission",
-                        "schema": {
-                            "$ref": "#/definitions/views.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not found User Middleware",
-                        "schema": {
-                            "$ref": "#/definitions/views.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Error deleting file",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -1216,6 +1077,452 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "No Permission\" \"Couldn't get User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/images/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "Images"
+                ],
+                "summary": "Get Image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "can't read the image",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Images"
+                ],
+                "summary": "Delete Image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error deleting file",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/videos": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "Create Video",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "project_id",
+                        "name": "project_id",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "season",
+                        "name": "season",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "serie",
+                        "name": "serie",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "video",
+                        "name": "video",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "can't create video",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/videos/play/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "Display Video",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "No Permission\" \"Couldn't get User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/videos/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/octet-stream"
+                ],
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "Get Video",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "can't read the video",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Videos"
+                ],
+                "summary": "Delete Video",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Error deleting file",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }

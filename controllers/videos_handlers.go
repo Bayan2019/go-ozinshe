@@ -220,7 +220,7 @@ func (vh *VideosHandlers) Upload(w http.ResponseWriter, r *http.Request, user vi
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "Error deleting file"
-// @Router       /v1/projects/videos [delete]
+// @Router       /v1/projects/videos/{id} [delete]
 // @Security Bearer
 func (vh *VideosHandlers) Delete(w http.ResponseWriter, r *http.Request, user views.User) {
 	can_do := false
