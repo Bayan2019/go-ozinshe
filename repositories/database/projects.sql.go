@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createProject = `-- name: CreateProject :one
@@ -280,6 +281,24 @@ func (q *Queries) GetProjectsOfType(ctx context.Context, typeID int64) ([]Projec
 		return nil, err
 	}
 	return items, nil
+}
+
+const setCover = `-- name: SetCover :exec
+
+UPDATE projects
+SET updated_at = CURRENT_TIMESTAMP,
+    cover = ?
+WHERE id = ?
+`
+
+type SetCoverParams struct {
+	Cover sql.NullString
+	ID    int64
+}
+
+func (q *Queries) SetCover(ctx context.Context, arg SetCoverParams) error {
+	_, err := q.db.ExecContext(ctx, setCover, arg.Cover, arg.ID)
+	return err
 }
 
 const updateProject = `-- name: UpdateProject :exec
