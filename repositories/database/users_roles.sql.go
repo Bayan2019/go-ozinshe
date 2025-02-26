@@ -39,3 +39,14 @@ func (q *Queries) RemoveRoleFromUser(ctx context.Context, arg RemoveRoleFromUser
 	_, err := q.db.ExecContext(ctx, removeRoleFromUser, arg.UserID, arg.RoleID)
 	return err
 }
+
+const removeRolesOfUser = `-- name: RemoveRolesOfUser :exec
+
+DELETE FROM users_roles 
+WHERE user_id = ?
+`
+
+func (q *Queries) RemoveRolesOfUser(ctx context.Context, userID int64) error {
+	_, err := q.db.ExecContext(ctx, removeRolesOfUser, userID)
+	return err
+}

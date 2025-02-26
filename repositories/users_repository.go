@@ -88,6 +88,11 @@ func (ur *UsersRepository) Update(ctx context.Context, id int64, uur views.Updat
 		return err
 	}
 
+	err = qtx.RemoveRolesOfUser(ctx, id)
+	if err != nil {
+		return err
+	}
+
 	for _, role_id := range uur.RoleIds {
 		err = qtx.AddRole2User(ctx, database.AddRole2UserParams{
 			UserID: id,
