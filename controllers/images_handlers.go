@@ -64,7 +64,7 @@ func (ih *ImagesHandlers) Display(w http.ResponseWriter, r *http.Request, user v
 	http.ServeFile(w, r, fmt.Sprintf("%s%s", ih.Dir, id))
 }
 
-// Display godoc
+// Get godoc
 // @Tags Images
 // @Summary      Get Image
 // @Accept       json
@@ -104,7 +104,7 @@ func (ih *ImagesHandlers) Get(w http.ResponseWriter, r *http.Request, user views
 	w.Write(byteFile)
 }
 
-// Display godoc
+// Create godoc
 // @Tags Images
 // @Summary      Create Image
 // @Accept       multipart/form-data
@@ -112,7 +112,7 @@ func (ih *ImagesHandlers) Get(w http.ResponseWriter, r *http.Request, user views
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param project_id formData int true "project_id"
 // @Param image formData file true "image"
-// @Success      200  {object} views.ResponseMessage  "OK"
+// @Success      201  {object} views.ResponseIdStr  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
@@ -189,19 +189,19 @@ func (ih *ImagesHandlers) Upload(w http.ResponseWriter, r *http.Request, user vi
 		return
 	}
 
-	views.RespondWithJSON(w, http.StatusCreated, views.ResponseMessage{
-		Message: fileName,
+	views.RespondWithJSON(w, http.StatusCreated, views.ResponseIdStr{
+		ID: fileName,
 	})
 }
 
-// Display godoc
+// Delete godoc
 // @Tags Images
 // @Summary      Delete Image
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param id path int true "id"
-// @Success      200  {object} views.ResponseMessage  "OK"
+// @Success      200  {object} views.ResponseIdStr  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
@@ -237,8 +237,8 @@ func (ih *ImagesHandlers) Delete(w http.ResponseWriter, r *http.Request, user vi
 		return
 	}
 
-	views.RespondWithJSON(w, http.StatusOK, views.ResponseMessage{
-		Message: id,
+	views.RespondWithJSON(w, http.StatusOK, views.ResponseIdStr{
+		ID: id,
 	})
 }
 

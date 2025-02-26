@@ -63,7 +63,7 @@ func (vh *VideosHandlers) Play(w http.ResponseWriter, r *http.Request, user view
 	http.ServeFile(w, r, fmt.Sprintf("%s%s", vh.Dir, id))
 }
 
-// Display godoc
+// Get godoc
 // @Tags Videos
 // @Summary      Get Video
 // @Accept       json
@@ -104,7 +104,7 @@ func (vh *VideosHandlers) Get(w http.ResponseWriter, r *http.Request, user views
 	w.Write(byteFile)
 }
 
-// Display godoc
+// Create godoc
 // @Tags Videos
 // @Summary      Create Video
 // @Accept       multipart/form-data
@@ -114,7 +114,7 @@ func (vh *VideosHandlers) Get(w http.ResponseWriter, r *http.Request, user views
 // @Param season formData int true "season"
 // @Param serie formData int true "serie"
 // @Param video formData file true "video"
-// @Success      200  {object} views.ResponseMessage  "OK"
+// @Success      200  {object} views.ResponseIdStr  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
@@ -202,19 +202,19 @@ func (vh *VideosHandlers) Upload(w http.ResponseWriter, r *http.Request, user vi
 		return
 	}
 
-	views.RespondWithJSON(w, http.StatusCreated, views.ResponseMessage{
-		Message: fileName,
+	views.RespondWithJSON(w, http.StatusCreated, views.ResponseIdStr{
+		ID: fileName,
 	})
 }
 
-// Display godoc
+// Delete godoc
 // @Tags Videos
 // @Summary      Delete Video
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param id path int true "id"
-// @Success      200  {object} views.ResponseMessage  "OK"
+// @Success      200  {object} views.ResponseIdStr  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
@@ -250,7 +250,7 @@ func (vh *VideosHandlers) Delete(w http.ResponseWriter, r *http.Request, user vi
 		return
 	}
 
-	views.RespondWithJSON(w, http.StatusOK, views.ResponseMessage{
-		Message: id,
+	views.RespondWithJSON(w, http.StatusOK, views.ResponseIdStr{
+		ID: id,
 	})
 }

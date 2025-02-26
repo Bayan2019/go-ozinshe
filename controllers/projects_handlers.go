@@ -1,25 +1,86 @@
 package controllers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
+	"io"
+	"mime"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/Bayan2019/go-ozinshe/repositories"
+	"github.com/Bayan2019/go-ozinshe/repositories/database"
 	"github.com/Bayan2019/go-ozinshe/views"
 	"github.com/go-chi/chi"
+	"github.com/google/uuid"
 )
 
 type ProjectsHandlers struct {
 	repo *repositories.ProjectsRepository
+	Dir  string
 }
 
-func NewProjecsHandlers(repo *repositories.ProjectsRepository) *ProjectsHandlers {
+func NewProjecsHandlers(repo *repositories.ProjectsRepository, dir string) *ProjectsHandlers {
 	return &ProjectsHandlers{
 		repo: repo,
+		Dir:  dir,
 	}
 }
+
+// GetAll godoc
+// @Tags Projects
+// @Summary      Get Projects List
+// @Accept       json
+// @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
+// @Success      200  {array} database.Project "OK"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get Projects"
+// @Router       /v1/projects [get]
+// @Security Bearer
+func (ph *ProjectsHandlers) GetAll(w http.ResponseWriter, r *http.Request, user views.User) {
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Projects >= 2 {
+			can_do = true
+			break
+		}
+	}
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
+		return
+	}
+
+	projects, err := ph.repo.DB.GetProjects(r.Context())
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects", err)
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, projects)
+}
+
+// GetProject godoc
+// @Tags Projects
+// @Summary      Get Project
+// @Accept       json
+// @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
+// @Param id path int true "id"
+// @Param request body views.UpdateProjectRequest true "Project data"
+// @Success      200  "OK"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get Project"
+// @Router       /v1/projects/{id} [get]
+// @Security Bearer
+func (ph *ProjectsHandlers) Get(w http.ResponseWriter, r *http.Request, user views.User) {}
 
 // Create godoc
 // @Tags Projects
@@ -120,4 +181,148 @@ func (ph *ProjectsHandlers) Update(w http.ResponseWriter, r *http.Request, user 
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+// Update godoc
+// @Tags Projects
+// @Summary      Set Cover for Project
+// @Accept       json
+// @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
+// @Param id path int true "id"
+// @Param request body views.ImageIdRequest true "Project data"
+// @Success      200  "OK"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Set Cover for Project"
+// @Router       /v1/projects/{id}/cover [patch]
+// @Security Bearer
+func (ph *ProjectsHandlers) SetCover(w http.ResponseWriter, r *http.Request, user views.User) {
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Projects == 3 {
+			can_do = true
+			break
+		}
+	}
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
+		return
+	}
+
+	project_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
+		return
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	imageIdR := views.ImageIdRequest{}
+
+	err = decoder.Decode(&imageIdR)
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Error parsing JSON of ImageIdRequest", err)
+		return
+	}
+
+	err = ph.repo.DB.SetCover(r.Context(), database.SetCoverParams{
+		Cover: sql.NullString{
+			String: imageIdR.ImageId,
+			Valid:  true,
+		},
+		ID: int64(project_id),
+	})
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't set the Cover for the Project", err)
+		return
+	}
+}
+
+// Upload godoc
+// @Tags Projects
+// @Summary      Upload Cover
+// @Accept       multipart/form-data
+// @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
+// @Param id path int true "id"
+// @Param image formData file true "image"
+// @Success      200  {object} views.ResponseMessage  "OK"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
+// @Failure   	 500  {object} views.ErrorResponse "can't create image"
+// @Router       /v1/projects/{id}/cover [post]
+// @Security Bearer
+func (ph *ProjectsHandlers) UploadCover(w http.ResponseWriter, r *http.Request, user views.User) {
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Projects == 3 {
+			can_do = true
+			break
+		}
+	}
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
+		return
+	}
+
+	// Set a const maxMemory to 10MB.
+	const maxMemory = 10 << 20 // 10 MB
+	// Use (http.Request).ParseMultipartForm with the maxMemory const as an argument
+	r.ParseMultipartForm(maxMemory)
+	// Use r.FormFile to get the file data. The key the web browser is using is called "image"
+	file, header, err := r.FormFile("image")
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Unable to parse form file", err)
+		return
+	}
+	defer file.Close()
+
+	// Get the media type from the file's Content-Type header
+	// Use the mime.ParseMediaType function to get the media type from the Content-Type header
+	mediaType, _, err := mime.ParseMediaType(header.Header.Get("Content-Type"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid Content-Type", err)
+		return
+	}
+	// If the media type isn't either image/jpeg or image/png,
+	// respond with an error (respondWithError helper)
+	if mediaType != "image/jpeg" && mediaType != "image/png" {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid file type", nil)
+		return
+	}
+	ext := mediaTypeToExt(mediaType)
+	fileName := fmt.Sprintf("%s%s", uuid.NewString(), ext)
+	fpath := fmt.Sprintf("%s%s", ph.Dir, fileName)
+	// Use os.Create to create the new file
+	dst, err := os.Create(fpath)
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Unable to create file on server", err)
+		return
+	}
+	defer dst.Close()
+
+	if _, err = io.Copy(dst, file); err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Error saving file", err)
+		return
+	}
+
+	project_id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
+		return
+	}
+
+	err = ph.repo.UploadCover(r.Context(), int64(project_id), fileName)
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Error saving file", err)
+		return
+	}
+
+	views.RespondWithJSON(w, http.StatusCreated, views.ResponseMessage{
+		Message: fileName,
+	})
 }

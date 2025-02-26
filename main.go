@@ -162,6 +162,16 @@ func main() {
 		v1Router.Get("/projects/videos/{id}", authHandlers.MiddlewareAuth(videosHandlers.Get))
 		v1Router.Delete("/projects/videos/{id}", authHandlers.MiddlewareAuth(videosHandlers.Delete))
 		v1Router.Get("/projects/videos/play/{id}", authHandlers.MiddlewareAuth(videosHandlers.Play))
+
+		projectsRepository := repositories.NewProjectsRepository(configuration.ApiCfg.Conn)
+		projectsHandlers := controllers.NewProjecsHandlers(projectsRepository, configuration.ApiCfg.Dir)
+
+		v1Router.Get("/projects", authHandlers.MiddlewareAuth(projectsHandlers.Get))
+		v1Router.Post("/projects", authHandlers.MiddlewareAuth(projectsHandlers.Create))
+		v1Router.Put("/projects/{id}", authHandlers.MiddlewareAuth(projectsHandlers.Update))
+
+		v1Router.Post("/projects/{id}/cover", authHandlers.MiddlewareAuth(projectsHandlers.UploadCover))
+		v1Router.Patch("/projects/{id}/cover", authHandlers.MiddlewareAuth(projectsHandlers.SetCover))
 	}
 
 	router.Mount("/v1", v1Router)
