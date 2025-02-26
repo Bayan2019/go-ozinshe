@@ -137,7 +137,7 @@ func (ih *ImagesHandlers) Upload(w http.ResponseWriter, r *http.Request, user vi
 	const maxMemory = 10 << 20 // 10 MB
 	// Use (http.Request).ParseMultipartForm with the maxMemory const as an argument
 	r.ParseMultipartForm(maxMemory)
-	// Use r.FormFile to get the file data. The key the web browser is using is called "thumbnail"
+	// Use r.FormFile to get the file data. The key the web browser is using is called "image"
 	file, header, err := r.FormFile("image")
 	if err != nil {
 		views.RespondWithError(w, http.StatusBadRequest, "Unable to parse form file", err)
