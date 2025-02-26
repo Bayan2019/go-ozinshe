@@ -21,7 +21,7 @@ WHERE w.user_id = ?
 ORDER BY added_at;
 --
 
--- name: UpdateProjects :one
+-- name: UpdateProjects :exec
 UPDATE projects 
 SET updated_at = CURRENT_TIMESTAMP,
     title = ?, 
@@ -32,7 +32,6 @@ SET updated_at = CURRENT_TIMESTAMP,
     director = ?,
     producer = ?
 WHERE id = ?
-RETURNING *;
 --
 
 -- name: SetCover :exec
