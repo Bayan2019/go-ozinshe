@@ -40,33 +40,33 @@ func NewVideosHandlers(db *database.Queries, dir string) *VideosHandlers {
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "can't read the video"
-// @Router       /v1/projects/videos [get]
+// @Router       /v1/projects/videos/{id} [get]
 // @Security Bearer
-// func (vh *VideosHandlers) Get(w http.ResponseWriter, r *http.Request, user views.User) {
-// 	can_do := false
-// 	for _, role := range user.Roles {
-// 		if role.Projects >= 2 {
-// 			can_do = true
-// 			break
-// 		}
-// 	}
-// 	if !can_do {
-// 		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
-// 		return
-// 	}
+func (vh *VideosHandlers) Get(w http.ResponseWriter, r *http.Request, user views.User) {
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Projects >= 2 {
+			can_do = true
+			break
+		}
+	}
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
+		return
+	}
 
-// 	id := chi.URLParam(r, "id")
-// 	byteFile, err := os.ReadFile(fmt.Sprintf("%s%s", vh.Dir, id))
-// 	if err != nil {
-// 		views.RespondWithError(w, http.StatusInternalServerError, "can't read the video", err)
-// 		return
-// 	}
-// 	w.Header().Set("Content-Type", "video/mp4")
-// 	w.Header().Set("Content-Type", "application/octet-stream")
-// 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", id))
-// 	w.WriteHeader(http.StatusOK)
-// 	w.Write(byteFile)
-// }
+	id := chi.URLParam(r, "id")
+	byteFile, err := os.ReadFile(fmt.Sprintf("%s%s", vh.Dir, id))
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "can't read the video", err)
+		return
+	}
+	w.Header().Set("Content-Type", "video/mp4")
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", id))
+	w.WriteHeader(http.StatusOK)
+	w.Write(byteFile)
+}
 
 // Display godoc
 // @Tags Videos
@@ -74,14 +74,16 @@ func NewVideosHandlers(db *database.Queries, dir string) *VideosHandlers {
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
-// @Param poster_id formData int true "poster_id"
-// @Param poster formData file true "image"
+// @Param project_id formData int true "project_id"
+// @Param season formData int true "season"
+// @Param serie formData int true "serie"
+// @Param video formData file true "video"
 // @Success      200  {object} views.ResponseMessage  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
-// @Failure   	 500  {object} views.ErrorResponse "can't create image"
+// @Failure   	 500  {object} views.ErrorResponse "can't create video"
 // @Router       /v1/projects/videos [post]
 // @Security Bearer
 func (vh *VideosHandlers) Upload(w http.ResponseWriter, r *http.Request, user views.User) {
@@ -142,10 +144,22 @@ func (vh *VideosHandlers) Upload(w http.ResponseWriter, r *http.Request, user vi
 		views.RespondWithError(w, http.StatusBadRequest, "Invalid project_id", err)
 		return
 	}
+	season, err := strconv.Atoi(r.FormValue("season"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid season", err)
+		return
+	}
+	serie, err := strconv.Atoi(r.FormValue("serie"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid serie", err)
+		return
+	}
 
-	err = vh.DB.AddVideo2Movie(r.Context(), database.AddVideo2MovieParams{
+	err = vh.DB.AddVideo2Series(r.Context(), database.AddVideo2SeriesParams{
 		ID:        fileName,
 		ProjectID: int64(project_id),
+		Season:    int64(season),
+		Serie:     int64(serie),
 	})
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Error saving file", err)

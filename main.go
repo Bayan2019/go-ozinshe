@@ -157,7 +157,9 @@ func main() {
 		v1Router.Delete("/projects/images/{id}", authHandlers.MiddlewareAuth(imagesHandlers.Delete))
 
 		videosHandlers := controllers.NewVideosHandlers(configuration.ApiCfg.DB, configuration.ApiCfg.Dir)
+
 		v1Router.Post("/projects/videos", authHandlers.MiddlewareAuth(videosHandlers.Upload))
+		v1Router.Get("/projects/videos/{id}", authHandlers.MiddlewareAuth(videosHandlers.Get))
 	}
 
 	router.Mount("/v1", v1Router)

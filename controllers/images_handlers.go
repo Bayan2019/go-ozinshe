@@ -110,8 +110,8 @@ func (ih *ImagesHandlers) Get(w http.ResponseWriter, r *http.Request, user views
 // @Accept       multipart/form-data
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
-// @Param poster_id formData int true "poster_id"
-// @Param poster formData file true "image"
+// @Param project_id formData int true "project_id"
+// @Param image formData file true "image"
 // @Success      200  {object} views.ResponseMessage  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
