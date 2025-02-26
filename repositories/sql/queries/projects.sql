@@ -9,7 +9,7 @@ SELECT * FROM projects WHERE id = ?;
 -- name: CreateProject :one
 INSERT INTO projects(title, description, type_id, duration_in_mins, release_year, director, producer)
 VALUES (?, ?, ?, ?, ?, ?, ?)
-RETURNING *;
+RETURNING id;
 --
 
 -- name: GetWatchlistProjects :many
@@ -33,6 +33,13 @@ SET updated_at = CURRENT_TIMESTAMP,
     producer = ?
 WHERE id = ?
 RETURNING *;
+--
+
+-- name: SetCover :exec
+UPDATE projects
+SET updated_at = CURRENT_TIMESTAMP,
+    cover = ?
+WHERE id = ?;
 --
 
 -- name: DeleteProject :exec
