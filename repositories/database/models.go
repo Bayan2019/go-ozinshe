@@ -33,8 +33,8 @@ type Permission struct {
 
 type Project struct {
 	ID             int64
-	CreatedAt      sql.NullTime
-	UpdatedAt      sql.NullTime
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 	Title          string
 	Description    string
 	TypeID         int64
@@ -42,6 +42,7 @@ type Project struct {
 	ReleaseYear    int64
 	Director       string
 	Producer       string
+	Cover          sql.NullString
 }
 
 type ProjectsAgeCategory struct {

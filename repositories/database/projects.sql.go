@@ -7,13 +7,14 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const createProject = `-- name: CreateProject :one
 
 INSERT INTO projects(title, description, type_id, duration_in_mins, release_year, director, producer)
 VALUES (?, ?, ?, ?, ?, ?, ?)
-RETURNING id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer
+RETURNING id
 `
 
 type CreateProjectParams struct {
@@ -26,7 +27,7 @@ type CreateProjectParams struct {
 	Producer       string
 }
 
-func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (Project, error) {
+func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (int64, error) {
 	row := q.db.QueryRowContext(ctx, createProject,
 		arg.Title,
 		arg.Description,
@@ -36,20 +37,9 @@ func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (P
 		arg.Director,
 		arg.Producer,
 	)
-	var i Project
-	err := row.Scan(
-		&i.ID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Title,
-		&i.Description,
-		&i.TypeID,
-		&i.DurationInMins,
-		&i.ReleaseYear,
-		&i.Director,
-		&i.Producer,
-	)
-	return i, err
+	var id int64
+	err := row.Scan(&id)
+	return id, err
 }
 
 const deleteProject = `-- name: DeleteProject :exec
@@ -64,7 +54,7 @@ func (q *Queries) DeleteProject(ctx context.Context, id int64) error {
 
 const getProjectById = `-- name: GetProjectById :one
 
-SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer FROM projects WHERE id = ?
+SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover FROM projects WHERE id = ?
 `
 
 func (q *Queries) GetProjectById(ctx context.Context, id int64) (Project, error) {
@@ -81,12 +71,13 @@ func (q *Queries) GetProjectById(ctx context.Context, id int64) (Project, error)
 		&i.ReleaseYear,
 		&i.Director,
 		&i.Producer,
+		&i.Cover,
 	)
 	return i, err
 }
 
 const getProjects = `-- name: GetProjects :many
-SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer FROM projects
+SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover FROM projects
 `
 
 func (q *Queries) GetProjects(ctx context.Context) ([]Project, error) {
@@ -109,6 +100,7 @@ func (q *Queries) GetProjects(ctx context.Context) ([]Project, error) {
 			&i.ReleaseYear,
 			&i.Director,
 			&i.Producer,
+			&i.Cover,
 		); err != nil {
 			return nil, err
 		}
@@ -125,7 +117,7 @@ func (q *Queries) GetProjects(ctx context.Context) ([]Project, error) {
 
 const getWatchlistProjects = `-- name: GetWatchlistProjects :many
 
-SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer
+SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover
 FROM projects AS p
 JOIN watchlist AS w
 ON p.id = w.project_id
@@ -153,6 +145,7 @@ func (q *Queries) GetWatchlistProjects(ctx context.Context, userID int64) ([]Pro
 			&i.ReleaseYear,
 			&i.Director,
 			&i.Producer,
+			&i.Cover,
 		); err != nil {
 			return nil, err
 		}
@@ -167,6 +160,24 @@ func (q *Queries) GetWatchlistProjects(ctx context.Context, userID int64) ([]Pro
 	return items, nil
 }
 
+const setCover = `-- name: SetCover :exec
+
+UPDATE projects
+SET updated_at = CURRENT_TIMESTAMP,
+    cover = ?
+WHERE id = ?
+`
+
+type SetCoverParams struct {
+	Cover sql.NullString
+	ID    int64
+}
+
+func (q *Queries) SetCover(ctx context.Context, arg SetCoverParams) error {
+	_, err := q.db.ExecContext(ctx, setCover, arg.Cover, arg.ID)
+	return err
+}
+
 const updateProjects = `-- name: UpdateProjects :one
 
 UPDATE projects 
@@ -179,7 +190,7 @@ SET updated_at = CURRENT_TIMESTAMP,
     director = ?,
     producer = ?
 WHERE id = ?
-RETURNING id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer
+RETURNING id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover
 `
 
 type UpdateProjectsParams struct {
@@ -216,6 +227,7 @@ func (q *Queries) UpdateProjects(ctx context.Context, arg UpdateProjectsParams) 
 		&i.ReleaseYear,
 		&i.Director,
 		&i.Producer,
+		&i.Cover,
 	)
 	return i, err
 }
