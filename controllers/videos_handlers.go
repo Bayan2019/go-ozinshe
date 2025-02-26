@@ -29,6 +29,42 @@ func NewVideosHandlers(db *database.Queries, dir string) *VideosHandlers {
 
 // Display godoc
 // @Tags Videos
+// @Summary      Display Video
+// @Accept       json
+// @Produce      application/octet-stream
+// @Param Authorization header string true "Bearer AccessToken"
+// @Param id path int true "id"
+// @Success      200  "OK"
+// @Failure   	 400  {object} views.ErrorResponse "Invalid data"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
+// @Failure   	 500  {object} views.ErrorResponse "No Permission" "Couldn't get User Middleware"
+// @Router       /v1/projects/videos/play/{id} [get]
+// @Security Bearer
+func (vh *VideosHandlers) Play(w http.ResponseWriter, r *http.Request, user views.User) {
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Projects >= 2 {
+			can_do = true
+			break
+		}
+	}
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
+		return
+	}
+	// You can get the string value of the path parameter like in Go
+	// with the http.Request.PathValue method.
+	id := chi.URLParam(r, "id")
+	// enableCors(&w)
+	w.Header().Set("Content-Type", "video/mp4")
+	// w.ResponseWriter.WriteHeader(http.StatusOK)
+	http.ServeFile(w, r, fmt.Sprintf("%s%s", vh.Dir, id))
+}
+
+// Display godoc
+// @Tags Videos
 // @Summary      Get Video
 // @Accept       json
 // @Produce      application/octet-stream

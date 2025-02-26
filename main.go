@@ -160,6 +160,8 @@ func main() {
 
 		v1Router.Post("/projects/videos", authHandlers.MiddlewareAuth(videosHandlers.Upload))
 		v1Router.Get("/projects/videos/{id}", authHandlers.MiddlewareAuth(videosHandlers.Get))
+		v1Router.Delete("/projects/videos/{id}", authHandlers.MiddlewareAuth(videosHandlers.Delete))
+		v1Router.Get("/projects/videos/play/{id}", authHandlers.MiddlewareAuth(videosHandlers.Play))
 	}
 
 	router.Mount("/v1", v1Router)
