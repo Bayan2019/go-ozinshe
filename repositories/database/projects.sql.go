@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"database/sql"
 )
 
 const createProject = `-- name: CreateProject :one
@@ -115,18 +114,16 @@ func (q *Queries) GetProjects(ctx context.Context) ([]Project, error) {
 	return items, nil
 }
 
-const getWatchlistProjects = `-- name: GetWatchlistProjects :many
+const getProjectsOfAgeCategory = `-- name: GetProjectsOfAgeCategory :many
 
-SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover
-FROM projects AS p
-JOIN watchlist AS w
-ON p.id = w.project_id
-WHERE w.user_id = ?
-ORDER BY added_at
+SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover FROM projects AS p
+JOIN projects_age_categories AS pac 
+ON p.id = pac.project_id
+WHERE pac.age_category_id = ?
 `
 
-func (q *Queries) GetWatchlistProjects(ctx context.Context, userID int64) ([]Project, error) {
-	rows, err := q.db.QueryContext(ctx, getWatchlistProjects, userID)
+func (q *Queries) GetProjectsOfAgeCategory(ctx context.Context, ageCategoryID int64) ([]Project, error) {
+	rows, err := q.db.QueryContext(ctx, getProjectsOfAgeCategory, ageCategoryID)
 	if err != nil {
 		return nil, err
 	}
@@ -160,40 +157,146 @@ func (q *Queries) GetWatchlistProjects(ctx context.Context, userID int64) ([]Pro
 	return items, nil
 }
 
-const setCover = `-- name: SetCover :exec
+const getProjectsOfGenre = `-- name: GetProjectsOfGenre :many
+
+SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover FROM projects AS p
+JOIN projects_genres AS pg 
+ON p.id = pg.project_id
+WHERE pg.genre_id = ?
+`
+
+func (q *Queries) GetProjectsOfGenre(ctx context.Context, genreID int64) ([]Project, error) {
+	rows, err := q.db.QueryContext(ctx, getProjectsOfGenre, genreID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Project
+	for rows.Next() {
+		var i Project
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Title,
+			&i.Description,
+			&i.TypeID,
+			&i.DurationInMins,
+			&i.ReleaseYear,
+			&i.Director,
+			&i.Producer,
+			&i.Cover,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getProjectsOfSearch = `-- name: GetProjectsOfSearch :many
+
+SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover FROM projects 
+WHERE LOWER(title) LIKE '%' + LOWER(?) + '%'
+`
+
+func (q *Queries) GetProjectsOfSearch(ctx context.Context, lower string) ([]Project, error) {
+	rows, err := q.db.QueryContext(ctx, getProjectsOfSearch, lower)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Project
+	for rows.Next() {
+		var i Project
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Title,
+			&i.Description,
+			&i.TypeID,
+			&i.DurationInMins,
+			&i.ReleaseYear,
+			&i.Director,
+			&i.Producer,
+			&i.Cover,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getProjectsOfType = `-- name: GetProjectsOfType :many
+
+SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover FROM projects 
+WHERE type_id = ?
+`
+
+func (q *Queries) GetProjectsOfType(ctx context.Context, typeID int64) ([]Project, error) {
+	rows, err := q.db.QueryContext(ctx, getProjectsOfType, typeID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Project
+	for rows.Next() {
+		var i Project
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Title,
+			&i.Description,
+			&i.TypeID,
+			&i.DurationInMins,
+			&i.ReleaseYear,
+			&i.Director,
+			&i.Producer,
+			&i.Cover,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateProject = `-- name: UpdateProject :exec
 
 UPDATE projects
 SET updated_at = CURRENT_TIMESTAMP,
-    cover = ?
-WHERE id = ?
-`
-
-type SetCoverParams struct {
-	Cover sql.NullString
-	ID    int64
-}
-
-func (q *Queries) SetCover(ctx context.Context, arg SetCoverParams) error {
-	_, err := q.db.ExecContext(ctx, setCover, arg.Cover, arg.ID)
-	return err
-}
-
-const updateProjects = `-- name: UpdateProjects :one
-
-UPDATE projects 
-SET updated_at = CURRENT_TIMESTAMP,
-    title = ?, 
-    description = ?, 
+    title = ?,
+    description = ?,
     type_id = ?,
     duration_in_mins = ?,
-    release_year = ?, 
+    release_year = ?,
     director = ?,
     producer = ?
 WHERE id = ?
-RETURNING id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover
 `
 
-type UpdateProjectsParams struct {
+type UpdateProjectParams struct {
 	Title          string
 	Description    string
 	TypeID         int64
@@ -204,8 +307,8 @@ type UpdateProjectsParams struct {
 	ID             int64
 }
 
-func (q *Queries) UpdateProjects(ctx context.Context, arg UpdateProjectsParams) (Project, error) {
-	row := q.db.QueryRowContext(ctx, updateProjects,
+func (q *Queries) UpdateProject(ctx context.Context, arg UpdateProjectParams) error {
+	_, err := q.db.ExecContext(ctx, updateProject,
 		arg.Title,
 		arg.Description,
 		arg.TypeID,
@@ -215,19 +318,5 @@ func (q *Queries) UpdateProjects(ctx context.Context, arg UpdateProjectsParams) 
 		arg.Producer,
 		arg.ID,
 	)
-	var i Project
-	err := row.Scan(
-		&i.ID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.Title,
-		&i.Description,
-		&i.TypeID,
-		&i.DurationInMins,
-		&i.ReleaseYear,
-		&i.Director,
-		&i.Producer,
-		&i.Cover,
-	)
-	return i, err
+	return err
 }

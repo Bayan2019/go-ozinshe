@@ -63,25 +63,10 @@ func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 			return
 		}
 
-		rRoles, err := ah.DB.GetRolesOfUser(r.Context(), user.ID)
+		roles, err := ah.DB.GetRolesOfUser(r.Context(), user.ID)
 		if err != nil {
 			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get roles", err)
 			return
-		}
-
-		vRoles := []views.Role{}
-
-		for _, role := range rRoles {
-			vRoles = append(vRoles, views.Role{
-				ID:            role.ID,
-				Title:         role.Title,
-				Projects:      role.Projects,
-				Genres:        role.Genres,
-				AgeCategories: role.AgeCategories,
-				Types:         role.Types,
-				Users:         role.Users,
-				Roles:         role.Roles,
-			})
 		}
 
 		handler(w, r, views.User{
@@ -90,7 +75,7 @@ func (ah *AuthHandlers) MiddlewareAuth(handler authedHandler) http.HandlerFunc {
 			Email:       user.Email,
 			DateOfBirth: user.DateOfBirth,
 			Phone:       user.Phone,
-			Roles:       vRoles,
+			Roles:       roles,
 		})
 	}
 }

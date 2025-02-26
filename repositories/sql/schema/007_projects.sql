@@ -9,8 +9,8 @@ CREATE TABLE projects(
     duration_in_mins INTEGER NOT NULL DEFAULT 0,
     release_year INT NOT NULL DEFAULT 0,
     director TEXT NOT NULL DEFAULT '',
-    producer TEXT NOT NULL DEFAULT '',
-    cover TEXT REFERENCES images(id)
+    producer TEXT NOT NULL DEFAULT ''
+    -- cover TEXT REFERENCES images(id)
 );
 
 -- +goose Down

@@ -226,25 +226,10 @@ func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user vi
 		return
 	}
 
-	rRoles, err := uh.userRepo.DB.GetRolesOfUser(r.Context(), user1.ID)
+	roles, err := uh.userRepo.DB.GetRolesOfUser(r.Context(), user1.ID)
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get roles", err)
 		return
-	}
-
-	vRoles := []views.Role{}
-
-	for _, role := range rRoles {
-		vRoles = append(vRoles, views.Role{
-			ID:            role.ID,
-			Title:         role.Title,
-			Projects:      role.Projects,
-			Genres:        role.Genres,
-			AgeCategories: role.AgeCategories,
-			Types:         role.Types,
-			Users:         role.Users,
-			Roles:         role.Roles,
-		})
 	}
 
 	views.RespondWithJSON(w, http.StatusOK, views.User{
@@ -253,7 +238,7 @@ func (uh *UsersHandlers) GetUser(w http.ResponseWriter, r *http.Request, user vi
 		Email:       user1.Email,
 		DateOfBirth: user1.DateOfBirth,
 		Phone:       user1.Phone,
-		Roles:       vRoles,
+		Roles:       roles,
 	})
 }
 

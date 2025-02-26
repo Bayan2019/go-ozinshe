@@ -2,6 +2,8 @@ package views
 
 import (
 	"time"
+
+	"github.com/Bayan2019/go-ozinshe/repositories/database"
 )
 
 type CreateUserRequest struct {
@@ -28,12 +30,12 @@ type UpdateUserRequest struct {
 }
 
 type User struct {
-	Id          int64     `json:"id"`
-	Name        string    `json:"name"`
-	Email       string    `json:"email"`
-	DateOfBirth time.Time `json:"date_of_birth"`
-	Phone       string    `json:"phone"`
-	Roles       []Role    `json:"roles"`
+	Id          int64           `json:"id"`
+	Name        string          `json:"name"`
+	Email       string          `json:"email"`
+	DateOfBirth time.Time       `json:"date_of_birth"`
+	Phone       string          `json:"phone"`
+	Roles       []database.Role `json:"roles"`
 }
 
 type SignInRequest struct {
