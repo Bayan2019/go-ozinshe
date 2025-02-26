@@ -49,6 +49,13 @@ SET updated_at = CURRENT_TIMESTAMP,
 WHERE id = ?;
 --
 
+-- name: SetCover :exec
+UPDATE projects
+SET updated_at = CURRENT_TIMESTAMP,
+    cover = ?
+WHERE id = ?;
+--
+
 -- name: DeleteProject :exec
 DELETE FROM projects WHERE id = ?;
 --
