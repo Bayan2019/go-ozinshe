@@ -20,6 +20,72 @@ func NewProjectsRepository(db *sql.DB) *ProjectsRepository {
 	}
 }
 
+func (pr *ProjectsRepository) GetById(ctx context.Context, id int64) (views.Project, error) {
+	tx, err := pr.Conn.Begin()
+	if err != nil {
+		return views.Project{}, err
+	}
+	defer tx.Rollback()
+	qtx := pr.DB.WithTx(tx)
+
+	rProject, err := qtx.GetProjectById(ctx, id)
+	if err != nil {
+		return views.Project{}, err
+	}
+
+	type1, err := qtx.GetTypeById(ctx, rProject.TypeID)
+	if err != nil {
+		return views.Project{}, err
+	}
+
+	image := database.Image{}
+	if rProject.Cover.Valid {
+		imageId := rProject.Cover.String
+		image, err = qtx.GetImage(ctx, imageId)
+		if err != nil {
+			return views.Project{}, err
+		}
+	}
+
+	genres, err := qtx.GetAllGenresOfProject(ctx, id)
+	if err != nil {
+		return views.Project{}, err
+	}
+
+	ageCategories, err := qtx.GetAllAgeCategoriesOfProject(ctx, id)
+	if err != nil {
+		return views.Project{}, err
+	}
+
+	images, err := qtx.GetImagesOfProject(ctx, id)
+	if err != nil {
+		return views.Project{}, err
+	}
+
+	videos, err := qtx.GetVideosOfProject(ctx, id)
+	if err != nil {
+		return views.Project{}, err
+	}
+
+	return views.Project{
+		ID:             id,
+		CreatedAt:      rProject.CreatedAt,
+		UpdatedAt:      rProject.UpdatedAt,
+		Title:          rProject.Title,
+		Description:    rProject.Description,
+		DurationInMins: rProject.DurationInMins,
+		ReleaseYear:    rProject.ReleaseYear,
+		Director:       rProject.Director,
+		Producer:       rProject.Producer,
+		Type:           type1,
+		Cover:          image,
+		Genres:         genres,
+		AgeCategories:  ageCategories,
+		Images:         images,
+		Videos:         videos,
+	}, tx.Commit()
+}
+
 func (pr *ProjectsRepository) Create(ctx context.Context, cpr views.CreateProjectRequest) (int64, error) {
 	tx, err := pr.Conn.Begin()
 	if err != nil {

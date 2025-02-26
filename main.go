@@ -166,7 +166,7 @@ func main() {
 		projectsRepository := repositories.NewProjectsRepository(configuration.ApiCfg.Conn)
 		projectsHandlers := controllers.NewProjecsHandlers(projectsRepository, configuration.ApiCfg.Dir)
 
-		v1Router.Get("/projects", authHandlers.MiddlewareAuth(projectsHandlers.Get))
+		v1Router.Get("/projects", authHandlers.MiddlewareAuth(projectsHandlers.GetAll))
 		v1Router.Post("/projects", authHandlers.MiddlewareAuth(projectsHandlers.Create))
 		v1Router.Put("/projects/{id}", authHandlers.MiddlewareAuth(projectsHandlers.Update))
 

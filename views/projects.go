@@ -1,5 +1,29 @@
 package views
 
+import (
+	"time"
+
+	"github.com/Bayan2019/go-ozinshe/repositories/database"
+)
+
+type Project struct {
+	ID             int64                  `json:"id"`
+	CreatedAt      time.Time              `json:"created_at"`
+	UpdatedAt      time.Time              `json:"updated_at"`
+	Title          string                 `json:"title"`
+	Description    string                 `json:"description"`
+	Type           database.Type          `json:"type"`
+	DurationInMins int64                  `json:"duration_in_mins"`
+	ReleaseYear    int64                  `json:"release_year"`
+	Director       string                 `json:"director"`
+	Producer       string                 `json:"producer"`
+	Cover          database.Image         `json:"cover"`
+	Genres         []database.Genre       `json:"genres"`
+	AgeCategories  []database.AgeCategory `json:"age_categories"`
+	Images         []database.Image       `json:"images"`
+	Videos         []database.Video       `json:"videos"`
+}
+
 type CreateProjectRequest struct {
 	Title          string  `json:"title"`
 	Description    string  `json:"description"`
