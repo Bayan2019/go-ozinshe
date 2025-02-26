@@ -175,6 +175,10 @@ func (ih *ImagesHandlers) Upload(w http.ResponseWriter, r *http.Request, user vi
 	}
 
 	project_id, err := strconv.Atoi(r.FormValue("project_id"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid project_id", err)
+		return
+	}
 
 	err = ih.DB.AddImage2Movie(r.Context(), database.AddImage2MovieParams{
 		ID:        fileName,
