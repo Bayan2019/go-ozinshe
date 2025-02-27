@@ -21,8 +21,8 @@ type Genre struct {
 
 type Image struct {
 	ID        string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt string
+	UpdatedAt string
 	ProjectID int64
 }
 
@@ -33,8 +33,8 @@ type Permission struct {
 
 type Project struct {
 	ID             int64
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
+	CreatedAt      string
+	UpdatedAt      string
 	Title          string
 	Description    string
 	TypeID         int64
@@ -57,11 +57,11 @@ type ProjectsGenre struct {
 
 type RefreshToken struct {
 	Token     string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	CreatedAt string
+	UpdatedAt string
 	UserID    int64
-	ExpiresAt time.Time
-	RevokedAt sql.NullTime
+	ExpiresAt string
+	RevokedAt sql.NullString
 }
 
 type Role struct {
@@ -82,8 +82,8 @@ type Type struct {
 
 type User struct {
 	ID           int64
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	CreatedAt    string
+	UpdatedAt    string
 	Name         string
 	Email        string
 	PasswordHash string
@@ -99,7 +99,7 @@ type UsersRole struct {
 
 type Video struct {
 	ID        string
-	CreatedAt time.Time
+	CreatedAt string
 	UpdatedAt time.Time
 	ProjectID int64
 	Season    int64
@@ -107,7 +107,7 @@ type Video struct {
 }
 
 type Watchlist struct {
-	AddedAt   time.Time
+	AddedAt   string
 	UserID    int64
 	ProjectID int64
 }

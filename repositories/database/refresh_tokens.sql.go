@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"time"
 )
 
 const createRefreshToken = `-- name: CreateRefreshToken :exec
@@ -22,7 +21,7 @@ VALUES (
 type CreateRefreshTokenParams struct {
 	Token     string
 	UserID    int64
-	ExpiresAt time.Time
+	ExpiresAt string
 }
 
 func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshTokenParams) error {

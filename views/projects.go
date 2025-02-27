@@ -1,15 +1,13 @@
 package views
 
 import (
-	"time"
-
 	"github.com/Bayan2019/go-ozinshe/repositories/database"
 )
 
 type RProject struct {
 	ID             int64          `json:"id"`
-	CreatedAt      time.Time      `json:"created_at"`
-	UpdatedAt      time.Time      `json:"updated_at"`
+	CreatedAt      string         `json:"created_at"`
+	UpdatedAt      string         `json:"updated_at"`
 	Title          string         `json:"title"`
 	Description    string         `json:"description"`
 	Type           database.Type  `json:"type"`
@@ -22,8 +20,8 @@ type RProject struct {
 
 type Project struct {
 	ID             int64                  `json:"id"`
-	CreatedAt      time.Time              `json:"created_at"`
-	UpdatedAt      time.Time              `json:"updated_at"`
+	CreatedAt      string                 `json:"created_at"`
+	UpdatedAt      string                 `json:"updated_at"`
 	Title          string                 `json:"title"`
 	Description    string                 `json:"description"`
 	Type           database.Type          `json:"type"`

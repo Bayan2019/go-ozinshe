@@ -132,7 +132,7 @@ func (ah *AuthHandlers) Login(w http.ResponseWriter, r *http.Request) {
 	err = ah.DB.CreateRefreshToken(r.Context(), database.CreateRefreshTokenParams{
 		Token:     refreshToken,
 		UserID:    user.ID,
-		ExpiresAt: time.Now().UTC().Add(time.Hour * 24 * 60),
+		ExpiresAt: time.Now().UTC().Add(time.Hour * 24 * 60).Format(time.RFC3339),
 	})
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't save refresh token in DataBase", err)
