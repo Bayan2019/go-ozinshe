@@ -7,7 +7,6 @@ package database
 
 import (
 	"context"
-	"time"
 )
 
 const changePassword = `-- name: ChangePassword :exec
@@ -190,7 +189,7 @@ WHERE id = ?
 type UpdateUserParams struct {
 	Name        string
 	Email       string
-	DateOfBirth time.Time
+	DateOfBirth string
 	Phone       string
 	ID          int64
 }

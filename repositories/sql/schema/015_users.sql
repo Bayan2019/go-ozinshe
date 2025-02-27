@@ -6,7 +6,7 @@ CREATE TABLE users(
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
-    date_of_birth DATE NOT NULL DEFAULT CURRENT_DATE,
+    date_of_birth TEXT NOT NULL DEFAULT CURRENT_DATE,
     phone TEXT NOT NULL DEFAULT '+0(000)000-00-00'
 );
 

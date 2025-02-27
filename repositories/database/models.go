@@ -87,7 +87,7 @@ type User struct {
 	Name         string
 	Email        string
 	PasswordHash string
-	DateOfBirth  time.Time
+	DateOfBirth  string
 	Phone        string
 }
 
