@@ -6,8 +6,8 @@ import (
 	"log"
 
 	"github.com/Bayan2019/go-ozinshe/repositories/database"
-	_ "github.com/mattn/go-sqlite3"
-	// _ "github.com/tursodatabase/libsql-client-go/libsql"
+	// _ "github.com/mattn/go-sqlite3"
+	_ "github.com/tursodatabase/libsql-client-go/libsql"
 )
 
 // var MapCfg *MapConfiguration
@@ -28,8 +28,8 @@ func Connect2DB(dbPath string) error {
 	if dbPath == "" {
 		return errors.New("no DataBase Path")
 	}
-	db, err := sql.Open("sqlite3", dbPath)
-	// db, err := sql.Open("libsql", dbPath)
+	// db, err := sql.Open("sqlite3", dbPath)
+	db, err := sql.Open("libsql", dbPath)
 	if err != nil {
 		return err
 	}
