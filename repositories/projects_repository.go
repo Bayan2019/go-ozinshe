@@ -20,6 +20,52 @@ func NewProjectsRepository(db *sql.DB) *ProjectsRepository {
 	}
 }
 
+func (pr *ProjectsRepository) GetAll(ctx context.Context) ([]views.RProject, error) {
+	tx, err := pr.Conn.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+	qtx := pr.DB.WithTx(tx)
+
+	rProjects, err := qtx.GetProjects(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	projects := []views.RProject{}
+
+	for _, p := range rProjects {
+		type1, err := qtx.GetTypeById(ctx, p.TypeID)
+		if err != nil {
+			return nil, err
+		}
+		image := database.Image{}
+		if p.Cover.Valid {
+			imageId := p.Cover.String
+			image, err = qtx.GetImage(ctx, imageId)
+			if err != nil {
+				return nil, err
+			}
+		}
+		projects = append(projects, views.RProject{
+			ID:             p.ID,
+			CreatedAt:      p.CreatedAt,
+			UpdatedAt:      p.UpdatedAt,
+			Title:          p.Title,
+			Description:    p.Description,
+			Type:           type1,
+			DurationInMins: p.DurationInMins,
+			ReleaseYear:    p.ReleaseYear,
+			Director:       p.Director,
+			Producer:       p.Producer,
+			Cover:          image,
+		})
+	}
+
+	return projects, tx.Commit()
+}
+
 func (pr *ProjectsRepository) GetById(ctx context.Context, id int64) (views.Project, error) {
 	tx, err := pr.Conn.Begin()
 	if err != nil {

@@ -21,8 +21,8 @@ type Genre struct {
 
 type Image struct {
 	ID        string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	ProjectID int64
 }
 
@@ -99,8 +99,8 @@ type UsersRole struct {
 
 type Video struct {
 	ID        string
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	ProjectID int64
 	Season    int64
 	Serie     int64

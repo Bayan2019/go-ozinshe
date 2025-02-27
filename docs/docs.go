@@ -934,6 +934,142 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/projects": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get Projects List",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/views.RProject"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't Get Projects",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Create Project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Project data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/views.CreateProjectRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseId"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't Create Project",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/projects/images": {
             "post": {
                 "security": [
@@ -975,10 +1111,10 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/views.ResponseMessage"
+                            "$ref": "#/definitions/views.ResponseIdStr"
                         }
                     },
                     "400": {
@@ -1189,7 +1325,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/views.ResponseMessage"
+                            "$ref": "#/definitions/views.ResponseIdStr"
                         }
                     },
                     "400": {
@@ -1283,7 +1419,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/views.ResponseMessage"
+                            "$ref": "#/definitions/views.ResponseIdStr"
                         }
                     },
                     "400": {
@@ -1494,7 +1630,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/views.ResponseMessage"
+                            "$ref": "#/definitions/views.ResponseIdStr"
                         }
                     },
                     "400": {
@@ -1523,6 +1659,310 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Error deleting file",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get Project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't Get Project",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Update Project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Project data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/views.UpdateProjectRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't Update Project",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/{id}/cover": {
+            "post": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Upload Cover",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.ResponseMessage"
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "can't create image",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Set Cover for Project",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Project data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/views.ImageIdRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Invalid data",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't Set Cover for Project",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -2765,6 +3205,23 @@ const docTemplate = `{
                 }
             }
         },
+        "database.Image": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "projectID": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "database.Role": {
             "type": "object",
             "properties": {
@@ -2818,6 +3275,44 @@ const docTemplate = `{
             "properties": {
                 "title": {
                     "type": "string"
+                }
+            }
+        },
+        "views.CreateProjectRequest": {
+            "type": "object",
+            "properties": {
+                "age_category_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "director": {
+                    "type": "string"
+                },
+                "duration_in_mins": {
+                    "type": "integer"
+                },
+                "genre_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "producer": {
+                    "type": "string"
+                },
+                "release_year": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -2878,6 +3373,52 @@ const docTemplate = `{
                 }
             }
         },
+        "views.ImageIdRequest": {
+            "type": "object",
+            "properties": {
+                "image_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "views.RProject": {
+            "type": "object",
+            "properties": {
+                "cover": {
+                    "$ref": "#/definitions/database.Image"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "director": {
+                    "type": "string"
+                },
+                "duration_in_mins": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "producer": {
+                    "type": "string"
+                },
+                "release_year": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/database.Type"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "views.ResponseId": {
             "type": "object",
             "properties": {
@@ -2886,40 +3427,19 @@ const docTemplate = `{
                 }
             }
         },
+        "views.ResponseIdStr": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                }
+            }
+        },
         "views.ResponseMessage": {
             "type": "object",
             "properties": {
                 "message": {
                     "type": "string"
-                }
-            }
-        },
-        "views.Role": {
-            "type": "object",
-            "properties": {
-                "age_categories": {
-                    "type": "integer"
-                },
-                "genres": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "projects": {
-                    "type": "integer"
-                },
-                "roles": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "types": {
-                    "type": "integer"
-                },
-                "users": {
-                    "type": "integer"
                 }
             }
         },
@@ -2976,6 +3496,44 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                }
+            }
+        },
+        "views.UpdateProjectRequest": {
+            "type": "object",
+            "properties": {
+                "age_category_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "director": {
+                    "type": "string"
+                },
+                "duration_in_mins": {
+                    "type": "integer"
+                },
+                "genre_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "producer": {
+                    "type": "string"
+                },
+                "release_year": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type_id": {
+                    "type": "integer"
                 }
             }
         },
@@ -3059,7 +3617,7 @@ const docTemplate = `{
                 "roles": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/views.Role"
+                        "$ref": "#/definitions/database.Role"
                     }
                 }
             }

@@ -36,7 +36,7 @@ func NewProjecsHandlers(repo *repositories.ProjectsRepository, dir string) *Proj
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
-// @Success      200  {array} database.Project "OK"
+// @Success      200  {array} views.RProject "OK"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
@@ -56,7 +56,7 @@ func (ph *ProjectsHandlers) GetAll(w http.ResponseWriter, r *http.Request, user 
 		return
 	}
 
-	projects, err := ph.repo.DB.GetProjects(r.Context())
+	projects, err := ph.repo.GetAll(r.Context())
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects", err)
 	}
@@ -71,7 +71,6 @@ func (ph *ProjectsHandlers) GetAll(w http.ResponseWriter, r *http.Request, user 
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param id path int true "id"
-// @Param request body views.UpdateProjectRequest true "Project data"
 // @Success      200  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
@@ -80,7 +79,33 @@ func (ph *ProjectsHandlers) GetAll(w http.ResponseWriter, r *http.Request, user 
 // @Failure   	 500  {object} views.ErrorResponse "Couldn't Get Project"
 // @Router       /v1/projects/{id} [get]
 // @Security Bearer
-func (ph *ProjectsHandlers) Get(w http.ResponseWriter, r *http.Request, user views.User) {}
+func (ph *ProjectsHandlers) Get(w http.ResponseWriter, r *http.Request, user views.User) {
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Projects >= 2 {
+			can_do = true
+			break
+		}
+	}
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
+		return
+	}
+
+	id, err := strconv.Atoi(chi.URLParam(r, "id"))
+	if err != nil {
+		views.RespondWithError(w, http.StatusBadRequest, "Invalid id", err)
+		return
+	}
+
+	project, err := ph.repo.GetById(r.Context(), int64(id))
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get Project", err)
+		return
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, project)
+}
 
 // Create godoc
 // @Tags Projects
