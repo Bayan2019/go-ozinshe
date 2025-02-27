@@ -93,7 +93,7 @@ func main() {
 	router.Get("/hello", controllers.HelloHandler)
 
 	router.Get("/swagger/*",
-		httpSwagger.Handler(httpSwagger.URL("http://localhost:8081/swagger/doc.json")))
+		httpSwagger.Handler(httpSwagger.URL("https://go-ozinshe.onrender.com/swagger/doc.json")))
 
 	v1Router := chi.NewRouter()
 
