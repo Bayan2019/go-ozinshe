@@ -159,6 +159,9 @@ func (pr *ProjectsRepository) Create(ctx context.Context, cpr views.CreateProjec
 			ProjectID: id,
 			GenreID:   genre_id,
 		})
+		if err != nil {
+			return 0, err
+		}
 	}
 
 	for _, age_category_id := range cpr.AgeCategoryIds {
