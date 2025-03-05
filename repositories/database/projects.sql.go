@@ -8,6 +8,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"strings"
 )
 
 const createProject = `-- name: CreateProject :one
@@ -125,6 +126,59 @@ WHERE pac.age_category_id = ?
 
 func (q *Queries) GetProjectsOfAgeCategory(ctx context.Context, ageCategoryID int64) ([]Project, error) {
 	rows, err := q.db.QueryContext(ctx, getProjectsOfAgeCategory, ageCategoryID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Project
+	for rows.Next() {
+		var i Project
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Title,
+			&i.Description,
+			&i.TypeID,
+			&i.DurationInMins,
+			&i.ReleaseYear,
+			&i.Director,
+			&i.Producer,
+			&i.Cover,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getProjectsOfGenders = `-- name: GetProjectsOfGenders :many
+
+SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover FROM projects AS p
+JOIN projects_genres AS pg 
+ON p.id = pg.project_id
+WHERE pg.genre_id IN (/*SLICE:ids*/?)
+`
+
+func (q *Queries) GetProjectsOfGenders(ctx context.Context, ids []int64) ([]Project, error) {
+	query := getProjectsOfGenders
+	var queryParams []interface{}
+	if len(ids) > 0 {
+		for _, v := range ids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(ids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
+	}
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
 	if err != nil {
 		return nil, err
 	}
