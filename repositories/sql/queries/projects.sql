@@ -9,6 +9,16 @@ ON p.id = pg.project_id
 WHERE pg.genre_id IN (sqlc.slice('ids'));
 --
 
+-- name: GetProjectsOfGendersAndSearch :many
+SELECT p.* FROM projects AS p
+JOIN projects_genres AS pg 
+ON p.id = pg.project_id
+WHERE pg.genre_id IN (sqlc.slice('ids')) 
+    AND (LOWER(p.title) LIKE '%' + LOWER(?) + '%' 
+        OR LOWER(p.description) LIKE '%' + LOWER(?) + '%'
+        OR LOWER(p.keywords) LIKE '%' + LOWER(?) + '%');
+--
+
 -- name: GetProjectById :one
 SELECT * FROM projects WHERE id = ?;
 --
@@ -38,8 +48,8 @@ WHERE LOWER(title) LIKE '%' + LOWER(?) + '%';
 --
 
 -- name: CreateProject :one
-INSERT INTO projects(title, description, type_id, duration_in_mins, release_year, director, producer)
-VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO projects(title, description, type_id, duration_in_mins, release_year, director, producer, keywords)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING id;
 --
 
@@ -52,7 +62,8 @@ SET updated_at = CURRENT_TIMESTAMP,
     duration_in_mins = ?,
     release_year = ?,
     director = ?,
-    producer = ?
+    producer = ?,
+    keywords = ?
 WHERE id = ?;
 --
 
