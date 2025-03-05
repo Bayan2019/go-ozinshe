@@ -15,6 +15,7 @@ type RProject struct {
 	ReleaseYear    int64          `json:"release_year"`
 	Director       string         `json:"director"`
 	Producer       string         `json:"producer"`
+	Keywords       string         `json:"keywords"`
 	Cover          database.Image `json:"cover"`
 }
 
@@ -29,6 +30,7 @@ type Project struct {
 	ReleaseYear    int64                  `json:"release_year"`
 	Director       string                 `json:"director"`
 	Producer       string                 `json:"producer"`
+	Keywords       string                 `json:"keywords"`
 	Cover          database.Image         `json:"cover"`
 	Genres         []database.Genre       `json:"genres"`
 	AgeCategories  []database.AgeCategory `json:"age_categories"`
@@ -44,6 +46,7 @@ type CreateProjectRequest struct {
 	ReleaseYear    int64   `json:"release_year"`
 	Director       string  `json:"director"`
 	Producer       string  `json:"producer"`
+	Keywords       string  `json:"keywords"`
 	GenreIds       []int64 `json:"genre_ids"`
 	AgeCategoryIds []int64 `json:"age_category_ids"`
 }
@@ -56,6 +59,7 @@ type UpdateProjectRequest struct {
 	ReleaseYear    int64   `json:"release_year"`
 	Director       string  `json:"director"`
 	Producer       string  `json:"producer"`
+	Keywords       string  `json:"keywords"`
 	GenreIds       []int64 `json:"genre_ids"`
 	AgeCategoryIds []int64 `json:"age_category_ids"`
 }
