@@ -71,7 +71,7 @@ func (ph *ProjectsHandlers) GetAll(w http.ResponseWriter, r *http.Request, user 
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param id path int true "id"
-// @Success      200  "OK"
+// @Success      200  {object} views.Project "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
@@ -263,6 +263,8 @@ func (ph *ProjectsHandlers) SetCover(w http.ResponseWriter, r *http.Request, use
 		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't set the Cover for the Project", err)
 		return
 	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 // Upload godoc
@@ -273,7 +275,7 @@ func (ph *ProjectsHandlers) SetCover(w http.ResponseWriter, r *http.Request, use
 // @Param Authorization header string true "Bearer AccessToken"
 // @Param id path int true "id"
 // @Param image formData file true "image"
-// @Success      200  {object} views.ResponseMessage  "OK"
+// @Success      200  {object} views.ResponseIdStr  "OK"
 // @Failure   	 400  {object} views.ErrorResponse "Invalid data"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
@@ -347,7 +349,7 @@ func (ph *ProjectsHandlers) UploadCover(w http.ResponseWriter, r *http.Request, 
 		return
 	}
 
-	views.RespondWithJSON(w, http.StatusCreated, views.ResponseMessage{
-		Message: fileName,
+	views.RespondWithJSON(w, http.StatusCreated, views.ResponseIdStr{
+		ID: fileName,
 	})
 }
