@@ -1701,7 +1701,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/views.Project"
+                        }
                     },
                     "400": {
                         "description": "Invalid data",
@@ -1857,7 +1860,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/views.ResponseMessage"
+                            "$ref": "#/definitions/views.ResponseIdStr"
                         }
                     },
                     "400": {
@@ -3262,6 +3265,29 @@ const docTemplate = `{
                 }
             }
         },
+        "database.Video": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "projectID": {
+                    "type": "integer"
+                },
+                "season": {
+                    "type": "integer"
+                },
+                "serie": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "views.CreateAgeCategoryRequest": {
             "type": "object",
             "properties": {
@@ -3301,6 +3327,9 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "keywords": {
+                    "type": "string"
                 },
                 "producer": {
                     "type": "string"
@@ -3381,6 +3410,71 @@ const docTemplate = `{
                 }
             }
         },
+        "views.Project": {
+            "type": "object",
+            "properties": {
+                "age_categories": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/database.AgeCategory"
+                    }
+                },
+                "cover": {
+                    "$ref": "#/definitions/database.Image"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "director": {
+                    "type": "string"
+                },
+                "duration_in_mins": {
+                    "type": "integer"
+                },
+                "genres": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/database.Genre"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "images": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/database.Image"
+                    }
+                },
+                "keywords": {
+                    "type": "string"
+                },
+                "producer": {
+                    "type": "string"
+                },
+                "release_year": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/database.Type"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "videos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/database.Video"
+                    }
+                }
+            }
+        },
         "views.RProject": {
             "type": "object",
             "properties": {
@@ -3401,6 +3495,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
+                },
+                "keywords": {
+                    "type": "string"
                 },
                 "producer": {
                     "type": "string"
@@ -3522,6 +3619,9 @@ const docTemplate = `{
                     "items": {
                         "type": "integer"
                     }
+                },
+                "keywords": {
+                    "type": "string"
                 },
                 "producer": {
                     "type": "string"
