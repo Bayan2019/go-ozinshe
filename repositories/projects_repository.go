@@ -59,6 +59,7 @@ func (pr *ProjectsRepository) GetAll(ctx context.Context) ([]views.RProject, err
 			ReleaseYear:    p.ReleaseYear,
 			Director:       p.Director,
 			Producer:       p.Producer,
+			Keywords:       p.Keywords,
 			Cover:          image,
 		})
 	}
@@ -123,6 +124,7 @@ func (pr *ProjectsRepository) GetById(ctx context.Context, id int64) (views.Proj
 		ReleaseYear:    rProject.ReleaseYear,
 		Director:       rProject.Director,
 		Producer:       rProject.Producer,
+		Keywords:       rProject.Keywords,
 		Type:           type1,
 		Cover:          image,
 		Genres:         genres,
@@ -149,6 +151,7 @@ func (pr *ProjectsRepository) Create(ctx context.Context, cpr views.CreateProjec
 		ReleaseYear:    cpr.ReleaseYear,
 		Director:       cpr.Director,
 		Producer:       cpr.Producer,
+		Keywords:       cpr.Keywords,
 	})
 	if err != nil {
 		return 0, err
@@ -195,6 +198,7 @@ func (pr *ProjectsRepository) Update(ctx context.Context, id int64, upr views.Up
 		ReleaseYear:    upr.ReleaseYear,
 		Director:       upr.Director,
 		Producer:       upr.Producer,
+		Keywords:       upr.Keywords,
 	})
 	if err != nil {
 		return err
