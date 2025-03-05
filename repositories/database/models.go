@@ -14,6 +14,12 @@ type AgeCategory struct {
 	Title string
 }
 
+type Favourite struct {
+	AddedAt   string
+	UserID    int64
+	ProjectID int64
+}
+
 type Genre struct {
 	ID    int64
 	Title string
