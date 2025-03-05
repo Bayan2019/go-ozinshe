@@ -13,8 +13,8 @@ import (
 
 const createProject = `-- name: CreateProject :one
 
-INSERT INTO projects(title, description, type_id, duration_in_mins, release_year, director, producer)
-VALUES (?, ?, ?, ?, ?, ?, ?)
+INSERT INTO projects(title, description, type_id, duration_in_mins, release_year, director, producer, keywords)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 RETURNING id
 `
 
@@ -26,6 +26,7 @@ type CreateProjectParams struct {
 	ReleaseYear    int64
 	Director       string
 	Producer       string
+	Keywords       string
 }
 
 func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (int64, error) {
@@ -37,6 +38,7 @@ func (q *Queries) CreateProject(ctx context.Context, arg CreateProjectParams) (i
 		arg.ReleaseYear,
 		arg.Director,
 		arg.Producer,
+		arg.Keywords,
 	)
 	var id int64
 	err := row.Scan(&id)
@@ -55,7 +57,7 @@ func (q *Queries) DeleteProject(ctx context.Context, id int64) error {
 
 const getProjectById = `-- name: GetProjectById :one
 
-SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover FROM projects WHERE id = ?
+SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects WHERE id = ?
 `
 
 func (q *Queries) GetProjectById(ctx context.Context, id int64) (Project, error) {
@@ -73,12 +75,13 @@ func (q *Queries) GetProjectById(ctx context.Context, id int64) (Project, error)
 		&i.Director,
 		&i.Producer,
 		&i.Cover,
+		&i.Keywords,
 	)
 	return i, err
 }
 
 const getProjects = `-- name: GetProjects :many
-SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover FROM projects
+SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects
 `
 
 func (q *Queries) GetProjects(ctx context.Context) ([]Project, error) {
@@ -102,6 +105,7 @@ func (q *Queries) GetProjects(ctx context.Context) ([]Project, error) {
 			&i.Director,
 			&i.Producer,
 			&i.Cover,
+			&i.Keywords,
 		); err != nil {
 			return nil, err
 		}
@@ -118,7 +122,7 @@ func (q *Queries) GetProjects(ctx context.Context) ([]Project, error) {
 
 const getProjectsOfAgeCategory = `-- name: GetProjectsOfAgeCategory :many
 
-SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover FROM projects AS p
+SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover, p.keywords FROM projects AS p
 JOIN projects_age_categories AS pac 
 ON p.id = pac.project_id
 WHERE pac.age_category_id = ?
@@ -145,6 +149,7 @@ func (q *Queries) GetProjectsOfAgeCategory(ctx context.Context, ageCategoryID in
 			&i.Director,
 			&i.Producer,
 			&i.Cover,
+			&i.Keywords,
 		); err != nil {
 			return nil, err
 		}
@@ -161,7 +166,7 @@ func (q *Queries) GetProjectsOfAgeCategory(ctx context.Context, ageCategoryID in
 
 const getProjectsOfGenders = `-- name: GetProjectsOfGenders :many
 
-SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover FROM projects AS p
+SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover, p.keywords FROM projects AS p
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
 WHERE pg.genre_id IN (/*SLICE:ids*/?)
@@ -198,6 +203,74 @@ func (q *Queries) GetProjectsOfGenders(ctx context.Context, ids []int64) ([]Proj
 			&i.Director,
 			&i.Producer,
 			&i.Cover,
+			&i.Keywords,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getProjectsOfGendersAndSearch = `-- name: GetProjectsOfGendersAndSearch :many
+
+SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover, p.keywords FROM projects AS p
+JOIN projects_genres AS pg 
+ON p.id = pg.project_id
+WHERE pg.genre_id IN (/*SLICE:ids*/?) 
+    AND (LOWER(p.title) LIKE '%' + LOWER(?) + '%' 
+        OR LOWER(p.description) LIKE '%' + LOWER(?) + '%'
+        OR LOWER(p.keywords) LIKE '%' + LOWER(?) + '%')
+`
+
+type GetProjectsOfGendersAndSearchParams struct {
+	Ids     []int64
+	LOWER   string
+	LOWER_2 string
+	LOWER_3 string
+}
+
+func (q *Queries) GetProjectsOfGendersAndSearch(ctx context.Context, arg GetProjectsOfGendersAndSearchParams) ([]Project, error) {
+	query := getProjectsOfGendersAndSearch
+	var queryParams []interface{}
+	if len(arg.Ids) > 0 {
+		for _, v := range arg.Ids {
+			queryParams = append(queryParams, v)
+		}
+		query = strings.Replace(query, "/*SLICE:ids*/?", strings.Repeat(",?", len(arg.Ids))[1:], 1)
+	} else {
+		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
+	}
+	queryParams = append(queryParams, arg.LOWER)
+	queryParams = append(queryParams, arg.LOWER_2)
+	queryParams = append(queryParams, arg.LOWER_3)
+	rows, err := q.db.QueryContext(ctx, query, queryParams...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Project
+	for rows.Next() {
+		var i Project
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Title,
+			&i.Description,
+			&i.TypeID,
+			&i.DurationInMins,
+			&i.ReleaseYear,
+			&i.Director,
+			&i.Producer,
+			&i.Cover,
+			&i.Keywords,
 		); err != nil {
 			return nil, err
 		}
@@ -214,7 +287,7 @@ func (q *Queries) GetProjectsOfGenders(ctx context.Context, ids []int64) ([]Proj
 
 const getProjectsOfGenre = `-- name: GetProjectsOfGenre :many
 
-SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover FROM projects AS p
+SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover, p.keywords FROM projects AS p
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
 WHERE pg.genre_id = ?
@@ -241,6 +314,7 @@ func (q *Queries) GetProjectsOfGenre(ctx context.Context, genreID int64) ([]Proj
 			&i.Director,
 			&i.Producer,
 			&i.Cover,
+			&i.Keywords,
 		); err != nil {
 			return nil, err
 		}
@@ -257,7 +331,7 @@ func (q *Queries) GetProjectsOfGenre(ctx context.Context, genreID int64) ([]Proj
 
 const getProjectsOfSearch = `-- name: GetProjectsOfSearch :many
 
-SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover FROM projects 
+SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects 
 WHERE LOWER(title) LIKE '%' + LOWER(?) + '%'
 `
 
@@ -282,6 +356,7 @@ func (q *Queries) GetProjectsOfSearch(ctx context.Context, lower string) ([]Proj
 			&i.Director,
 			&i.Producer,
 			&i.Cover,
+			&i.Keywords,
 		); err != nil {
 			return nil, err
 		}
@@ -298,7 +373,7 @@ func (q *Queries) GetProjectsOfSearch(ctx context.Context, lower string) ([]Proj
 
 const getProjectsOfType = `-- name: GetProjectsOfType :many
 
-SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover FROM projects 
+SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects 
 WHERE type_id = ?
 `
 
@@ -323,6 +398,7 @@ func (q *Queries) GetProjectsOfType(ctx context.Context, typeID int64) ([]Projec
 			&i.Director,
 			&i.Producer,
 			&i.Cover,
+			&i.Keywords,
 		); err != nil {
 			return nil, err
 		}
@@ -365,7 +441,8 @@ SET updated_at = CURRENT_TIMESTAMP,
     duration_in_mins = ?,
     release_year = ?,
     director = ?,
-    producer = ?
+    producer = ?,
+    keywords = ?
 WHERE id = ?
 `
 
@@ -377,6 +454,7 @@ type UpdateProjectParams struct {
 	ReleaseYear    int64
 	Director       string
 	Producer       string
+	Keywords       string
 	ID             int64
 }
 
@@ -389,6 +467,7 @@ func (q *Queries) UpdateProject(ctx context.Context, arg UpdateProjectParams) er
 		arg.ReleaseYear,
 		arg.Director,
 		arg.Producer,
+		arg.Keywords,
 		arg.ID,
 	)
 	return err

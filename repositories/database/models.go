@@ -49,6 +49,7 @@ type Project struct {
 	Director       string
 	Producer       string
 	Cover          sql.NullString
+	Keywords       string
 }
 
 type ProjectsAgeCategory struct {
