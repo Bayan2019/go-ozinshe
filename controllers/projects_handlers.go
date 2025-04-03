@@ -56,6 +56,9 @@ func (ph *ProjectsHandlers) GetAll(w http.ResponseWriter, r *http.Request, user 
 		return
 	}
 
+	idsArray := r.URL.Query()["genre_id"]
+	fmt.Println(idsArray)
+
 	projects, err := ph.repo.GetAll(r.Context())
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects", err)

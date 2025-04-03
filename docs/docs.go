@@ -3736,8 +3736,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "petstore.swagger.io",
-	BasePath:         "/v2",
+	Host:             "https://go-ozinshe.onrender.com",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "ÖZINŞE API",
 	Description:      "This is a sample server ÖZINŞE.",

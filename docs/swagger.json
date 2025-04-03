@@ -15,8 +15,8 @@
         },
         "version": "1.0"
     },
-    "host": "petstore.swagger.io",
-    "basePath": "/v2",
+    "host": "https://go-ozinshe.onrender.com",
+    "basePath": "/",
     "paths": {
         "/": {
             "get": {

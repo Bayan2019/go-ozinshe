@@ -14,9 +14,16 @@ SELECT p.* FROM projects AS p
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
 WHERE pg.genre_id IN (sqlc.slice('ids')) 
-    AND (LOWER(p.title) LIKE '%' + LOWER(?) + '%' 
-        OR LOWER(p.description) LIKE '%' + LOWER(?) + '%'
-        OR LOWER(p.keywords) LIKE '%' + LOWER(?) + '%');
+    AND ((LOWER(p.title) LIKE '%' + LOWER(?) + '%') 
+        OR (LOWER(p.description) LIKE '%' + LOWER(?) + '%')
+        OR (LOWER(p.keywords) LIKE '%' + LOWER(?) + '%'));
+--
+
+-- name: GetProjectsSearch :many
+SELECT * FROM projects
+WHERE ((LOWER(title) LIKE '%' + LOWER(?) + '%') 
+        OR (LOWER(description) LIKE '%' + LOWER(?) + '%')
+        OR (LOWER(keywords) LIKE '%' + LOWER(?) + '%'));
 --
 
 -- name: GetProjectById :one
@@ -40,11 +47,6 @@ WHERE pac.age_category_id = ?;
 -- name: GetProjectsOfType :many
 SELECT * FROM projects 
 WHERE type_id = ?;
---
-
--- name: GetProjectsOfSearch :many
-SELECT * FROM projects 
-WHERE LOWER(title) LIKE '%' + LOWER(?) + '%';
 --
 
 -- name: CreateProject :one
