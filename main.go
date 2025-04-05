@@ -33,7 +33,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
-// @host https://go-ozinshe.onrender.com
+// @host go-ozinshe.onrender.com
 // @BasePath /
 
 // @securityDefinitions.apikey Bearer

@@ -15,7 +15,7 @@
         },
         "version": "1.0"
     },
-    "host": "https://go-ozinshe.onrender.com",
+    "host": "go-ozinshe.onrender.com",
     "basePath": "/",
     "paths": {
         "/": {
