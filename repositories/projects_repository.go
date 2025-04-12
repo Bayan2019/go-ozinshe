@@ -20,7 +20,7 @@ func NewProjectsRepository(db *sql.DB) *ProjectsRepository {
 	}
 }
 
-func (pr *ProjectsRepository) GetAll(ctx context.Context) ([]views.RProject, error) {
+func (pr *ProjectsRepository) GetAll(ctx context.Context) ([]views.Project, error) {
 	tx, err := pr.Conn.Begin()
 	if err != nil {
 		return nil, err
@@ -28,41 +28,17 @@ func (pr *ProjectsRepository) GetAll(ctx context.Context) ([]views.RProject, err
 	defer tx.Rollback()
 	qtx := pr.DB.WithTx(tx)
 
-	rProjects, err := qtx.GetProjects(ctx)
+	dProjects, err := qtx.GetProjects(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	projects := []views.RProject{}
-
-	for _, p := range rProjects {
-		type1, err := qtx.GetTypeById(ctx, p.TypeID)
-		if err != nil {
-			return nil, err
-		}
-		image := database.Image{}
-		if p.Cover.Valid {
-			imageId := p.Cover.String
-			image, err = qtx.GetImage(ctx, imageId)
-			if err != nil {
-				return nil, err
-			}
-		}
-		projects = append(projects, views.RProject{
-			ID:             p.ID,
-			CreatedAt:      p.CreatedAt,
-			UpdatedAt:      p.UpdatedAt,
-			Title:          p.Title,
-			Description:    p.Description,
-			Type:           type1,
-			DurationInMins: p.DurationInMins,
-			ReleaseYear:    p.ReleaseYear,
-			Director:       p.Director,
-			Producer:       p.Producer,
-			Keywords:       p.Keywords,
-			Cover:          image,
-		})
+	projects, err := pr.DatabaseProjects2viewsProjects(ctx, dProjects)
+	if err != nil {
+		return nil, err
 	}
+
+	// projects := []views.Project{}
 
 	return projects, tx.Commit()
 }
@@ -75,63 +51,17 @@ func (pr *ProjectsRepository) GetById(ctx context.Context, id int64) (views.Proj
 	defer tx.Rollback()
 	qtx := pr.DB.WithTx(tx)
 
-	rProject, err := qtx.GetProjectById(ctx, id)
+	dProject, err := qtx.GetProjectById(ctx, id)
 	if err != nil {
 		return views.Project{}, err
 	}
 
-	type1, err := qtx.GetTypeById(ctx, rProject.TypeID)
+	project, err := pr.DatabaseProject2viewsProject(ctx, dProject)
 	if err != nil {
 		return views.Project{}, err
 	}
 
-	image := database.Image{}
-	if rProject.Cover.Valid {
-		imageId := rProject.Cover.String
-		image, err = qtx.GetImage(ctx, imageId)
-		if err != nil {
-			return views.Project{}, err
-		}
-	}
-
-	genres, err := qtx.GetAllGenresOfProject(ctx, id)
-	if err != nil {
-		return views.Project{}, err
-	}
-
-	ageCategories, err := qtx.GetAllAgeCategoriesOfProject(ctx, id)
-	if err != nil {
-		return views.Project{}, err
-	}
-
-	images, err := qtx.GetImagesOfProject(ctx, id)
-	if err != nil {
-		return views.Project{}, err
-	}
-
-	videos, err := qtx.GetVideosOfProject(ctx, id)
-	if err != nil {
-		return views.Project{}, err
-	}
-
-	return views.Project{
-		ID:             id,
-		CreatedAt:      rProject.CreatedAt,
-		UpdatedAt:      rProject.UpdatedAt,
-		Title:          rProject.Title,
-		Description:    rProject.Description,
-		DurationInMins: rProject.DurationInMins,
-		ReleaseYear:    rProject.ReleaseYear,
-		Director:       rProject.Director,
-		Producer:       rProject.Producer,
-		Keywords:       rProject.Keywords,
-		Type:           type1,
-		Cover:          image,
-		Genres:         genres,
-		AgeCategories:  ageCategories,
-		Images:         images,
-		Videos:         videos,
-	}, tx.Commit()
+	return project, tx.Commit()
 }
 
 func (pr *ProjectsRepository) Create(ctx context.Context, cpr views.CreateProjectRequest) (int64, error) {
@@ -266,4 +196,86 @@ func (pr *ProjectsRepository) UploadCover(ctx context.Context, project int64, co
 	}
 
 	return tx.Commit()
+}
+
+func (pr *ProjectsRepository) DatabaseProject2viewsProject(ctx context.Context, dProject database.Project) (views.Project, error) {
+	vProject := views.Project{}
+	tx, err := pr.Conn.Begin()
+	if err != nil {
+		return vProject, err
+	}
+	defer tx.Rollback()
+
+	qtx := pr.DB.WithTx(tx)
+
+	typ, err := qtx.GetTypeById(ctx, dProject.TypeID)
+	if err != nil {
+		return vProject, err
+	}
+	vProject.Type = typ
+
+	// var image database.Image
+	if dProject.Cover.Valid {
+		image, err := qtx.GetImage(ctx, dProject.Cover.String)
+		if err != nil {
+			return vProject, err
+		}
+		vProject.Cover = image
+	}
+
+	genres, err := qtx.GetAllGenresOfProject(ctx, dProject.ID)
+	if err != nil {
+		return vProject, err
+	}
+	vProject.Genres = genres
+
+	ageCategories, err := pr.DB.GetAllAgeCategoriesOfProject(ctx, dProject.ID)
+	if err != nil {
+		return vProject, err
+	}
+	vProject.AgeCategories = ageCategories
+
+	images, err := pr.DB.GetImagesOfProject(ctx, dProject.ID)
+	if err != nil {
+		return vProject, err
+	}
+	vProject.Images = images
+
+	videos, err := pr.DB.GetVideosOfProject(ctx, dProject.ID)
+	if err != nil {
+		return vProject, err
+	}
+	vProject.Videos = videos
+
+	vProject.ID = dProject.ID
+	vProject.CreatedAt = dProject.CreatedAt
+	vProject.UpdatedAt = dProject.UpdatedAt
+	vProject.Title = dProject.Title
+	vProject.Description = dProject.Description
+	vProject.DurationInMins = dProject.DurationInMins
+	vProject.ReleaseYear = dProject.ReleaseYear
+	vProject.Director = dProject.Director
+	vProject.Producer = dProject.Producer
+	vProject.Keywords = dProject.Keywords
+
+	return vProject, tx.Commit()
+}
+
+func (pr *ProjectsRepository) DatabaseProjects2viewsProjects(ctx context.Context, dprojects []database.Project) ([]views.Project, error) {
+	tx, err := pr.Conn.Begin()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	// qtx := pr.DB.WithTx(tx)
+	vProjects := []views.Project{}
+	for _, p := range dprojects {
+		vProject, err := pr.DatabaseProject2viewsProject(ctx, p)
+		if err != nil {
+			return vProjects, err
+		}
+		vProjects = append(vProjects, vProject)
+	}
+	return vProjects, tx.Commit()
 }

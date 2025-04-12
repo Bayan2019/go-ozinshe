@@ -188,33 +188,6 @@ definitions:
           $ref: '#/definitions/database.Video'
         type: array
     type: object
-  views.RProject:
-    properties:
-      cover:
-        $ref: '#/definitions/database.Image'
-      created_at:
-        type: string
-      description:
-        type: string
-      director:
-        type: string
-      duration_in_mins:
-        type: integer
-      id:
-        type: integer
-      keywords:
-        type: string
-      producer:
-        type: string
-      release_year:
-        type: integer
-      title:
-        type: string
-      type:
-        $ref: '#/definitions/database.Type'
-      updated_at:
-        type: string
-    type: object
   views.ResponseId:
     properties:
       id:
@@ -967,7 +940,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/views.RProject'
+              $ref: '#/definitions/views.Project'
             type: array
         "401":
           description: No token Middleware
@@ -1424,6 +1397,46 @@ paths:
       summary: Display Image
       tags:
       - Images
+  /v1/projects/search:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Bearer AccessToken
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/views.Project'
+            type: array
+        "401":
+          description: No token Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "403":
+          description: No Permission
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "404":
+          description: Not found User Middleware
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+        "500":
+          description: Couldn't Get Projects
+          schema:
+            $ref: '#/definitions/views.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get Projects List
+      tags:
+      - Projects
   /v1/projects/videos:
     post:
       consumes:

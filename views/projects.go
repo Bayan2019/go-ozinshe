@@ -4,20 +4,20 @@ import (
 	"github.com/Bayan2019/go-ozinshe/repositories/database"
 )
 
-type RProject struct {
-	ID             int64          `json:"id"`
-	CreatedAt      string         `json:"created_at"`
-	UpdatedAt      string         `json:"updated_at"`
-	Title          string         `json:"title"`
-	Description    string         `json:"description"`
-	Type           database.Type  `json:"type"`
-	DurationInMins int64          `json:"duration_in_mins"`
-	ReleaseYear    int64          `json:"release_year"`
-	Director       string         `json:"director"`
-	Producer       string         `json:"producer"`
-	Keywords       string         `json:"keywords"`
-	Cover          database.Image `json:"cover"`
-}
+// type RProject struct {
+// 	ID             int64          `json:"id"`
+// 	CreatedAt      string         `json:"created_at"`
+// 	UpdatedAt      string         `json:"updated_at"`
+// 	Title          string         `json:"title"`
+// 	Description    string         `json:"description"`
+// 	Type           database.Type  `json:"type"`
+// 	DurationInMins int64          `json:"duration_in_mins"`
+// 	ReleaseYear    int64          `json:"release_year"`
+// 	Director       string         `json:"director"`
+// 	Producer       string         `json:"producer"`
+// 	Keywords       string         `json:"keywords"`
+// 	Cover          database.Image `json:"cover"`
+// }
 
 type Project struct {
 	ID             int64                  `json:"id"`

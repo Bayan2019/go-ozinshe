@@ -164,7 +164,51 @@ func (q *Queries) GetProjectsOfAgeCategory(ctx context.Context, ageCategoryID in
 	return items, nil
 }
 
-const getProjectsOfGenders = `-- name: GetProjectsOfGenders :many
+const getProjectsOfGenre = `-- name: GetProjectsOfGenre :many
+
+SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover, p.keywords FROM projects AS p
+JOIN projects_genres AS pg 
+ON p.id = pg.project_id
+WHERE pg.genre_id = ?
+`
+
+func (q *Queries) GetProjectsOfGenre(ctx context.Context, genreID int64) ([]Project, error) {
+	rows, err := q.db.QueryContext(ctx, getProjectsOfGenre, genreID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Project
+	for rows.Next() {
+		var i Project
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Title,
+			&i.Description,
+			&i.TypeID,
+			&i.DurationInMins,
+			&i.ReleaseYear,
+			&i.Director,
+			&i.Producer,
+			&i.Cover,
+			&i.Keywords,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getProjectsOfGenrers = `-- name: GetProjectsOfGenrers :many
 
 SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover, p.keywords FROM projects AS p
 JOIN projects_genres AS pg 
@@ -172,8 +216,8 @@ ON p.id = pg.project_id
 WHERE pg.genre_id IN (/*SLICE:ids*/?)
 `
 
-func (q *Queries) GetProjectsOfGenders(ctx context.Context, ids []int64) ([]Project, error) {
-	query := getProjectsOfGenders
+func (q *Queries) GetProjectsOfGenrers(ctx context.Context, ids []int64) ([]Project, error) {
+	query := getProjectsOfGenrers
 	var queryParams []interface{}
 	if len(ids) > 0 {
 		for _, v := range ids {
@@ -218,26 +262,26 @@ func (q *Queries) GetProjectsOfGenders(ctx context.Context, ids []int64) ([]Proj
 	return items, nil
 }
 
-const getProjectsOfGendersAndSearch = `-- name: GetProjectsOfGendersAndSearch :many
+const getProjectsOfGenresAndSearch = `-- name: GetProjectsOfGenresAndSearch :many
 
 SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover, p.keywords FROM projects AS p
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
 WHERE pg.genre_id IN (/*SLICE:ids*/?) 
-    AND (LOWER(p.title) LIKE '%' + LOWER(?) + '%' 
-        OR LOWER(p.description) LIKE '%' + LOWER(?) + '%'
-        OR LOWER(p.keywords) LIKE '%' + LOWER(?) + '%')
+    AND ((LOWER(p.title) LIKE '%' + LOWER(?) + '%') 
+        OR (LOWER(p.description) LIKE '%' + LOWER(?) + '%')
+        OR (LOWER(p.keywords) LIKE '%' + LOWER(?) + '%'))
 `
 
-type GetProjectsOfGendersAndSearchParams struct {
+type GetProjectsOfGenresAndSearchParams struct {
 	Ids     []int64
 	LOWER   string
 	LOWER_2 string
 	LOWER_3 string
 }
 
-func (q *Queries) GetProjectsOfGendersAndSearch(ctx context.Context, arg GetProjectsOfGendersAndSearchParams) ([]Project, error) {
-	query := getProjectsOfGendersAndSearch
+func (q *Queries) GetProjectsOfGenresAndSearch(ctx context.Context, arg GetProjectsOfGenresAndSearchParams) ([]Project, error) {
+	query := getProjectsOfGenresAndSearch
 	var queryParams []interface{}
 	if len(arg.Ids) > 0 {
 		for _, v := range arg.Ids {
@@ -285,92 +329,6 @@ func (q *Queries) GetProjectsOfGendersAndSearch(ctx context.Context, arg GetProj
 	return items, nil
 }
 
-const getProjectsOfGenre = `-- name: GetProjectsOfGenre :many
-
-SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover, p.keywords FROM projects AS p
-JOIN projects_genres AS pg 
-ON p.id = pg.project_id
-WHERE pg.genre_id = ?
-`
-
-func (q *Queries) GetProjectsOfGenre(ctx context.Context, genreID int64) ([]Project, error) {
-	rows, err := q.db.QueryContext(ctx, getProjectsOfGenre, genreID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Project
-	for rows.Next() {
-		var i Project
-		if err := rows.Scan(
-			&i.ID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Title,
-			&i.Description,
-			&i.TypeID,
-			&i.DurationInMins,
-			&i.ReleaseYear,
-			&i.Director,
-			&i.Producer,
-			&i.Cover,
-			&i.Keywords,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getProjectsOfSearch = `-- name: GetProjectsOfSearch :many
-
-SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects 
-WHERE LOWER(title) LIKE '%' + LOWER(?) + '%'
-`
-
-func (q *Queries) GetProjectsOfSearch(ctx context.Context, lower string) ([]Project, error) {
-	rows, err := q.db.QueryContext(ctx, getProjectsOfSearch, lower)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Project
-	for rows.Next() {
-		var i Project
-		if err := rows.Scan(
-			&i.ID,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.Title,
-			&i.Description,
-			&i.TypeID,
-			&i.DurationInMins,
-			&i.ReleaseYear,
-			&i.Director,
-			&i.Producer,
-			&i.Cover,
-			&i.Keywords,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getProjectsOfType = `-- name: GetProjectsOfType :many
 
 SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects 
@@ -379,6 +337,56 @@ WHERE type_id = ?
 
 func (q *Queries) GetProjectsOfType(ctx context.Context, typeID int64) ([]Project, error) {
 	rows, err := q.db.QueryContext(ctx, getProjectsOfType, typeID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Project
+	for rows.Next() {
+		var i Project
+		if err := rows.Scan(
+			&i.ID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.Title,
+			&i.Description,
+			&i.TypeID,
+			&i.DurationInMins,
+			&i.ReleaseYear,
+			&i.Director,
+			&i.Producer,
+			&i.Cover,
+			&i.Keywords,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getProjectsSearch = `-- name: GetProjectsSearch :many
+
+SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects
+WHERE ((LOWER(title) LIKE '%' + LOWER(?) + '%') 
+        OR (LOWER(description) LIKE '%' + LOWER(?) + '%')
+        OR (LOWER(keywords) LIKE '%' + LOWER(?) + '%'))
+`
+
+type GetProjectsSearchParams struct {
+	LOWER   string
+	LOWER_2 string
+	LOWER_3 string
+}
+
+func (q *Queries) GetProjectsSearch(ctx context.Context, arg GetProjectsSearchParams) ([]Project, error) {
+	rows, err := q.db.QueryContext(ctx, getProjectsSearch, arg.LOWER, arg.LOWER_2, arg.LOWER_3)
 	if err != nil {
 		return nil, err
 	}

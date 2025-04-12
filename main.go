@@ -173,6 +173,8 @@ func main() {
 
 		v1Router.Post("/projects/{id}/cover", authHandlers.MiddlewareAuth(projectsHandlers.UploadCover))
 		v1Router.Patch("/projects/{id}/cover", authHandlers.MiddlewareAuth(projectsHandlers.SetCover))
+
+		v1Router.Get("/projects/search", authHandlers.MiddlewareAuth(projectsHandlers.GetAllSearch))
 	}
 
 	router.Mount("/v1", v1Router)

@@ -966,7 +966,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/views.RProject"
+                                "$ref": "#/definitions/views.Project"
                             }
                         }
                     },
@@ -1354,6 +1354,69 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Error deleting file",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/search": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Get Projects List",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer AccessToken",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/views.Project"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No token Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "No Permission",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found User Middleware",
+                        "schema": {
+                            "$ref": "#/definitions/views.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Couldn't Get Projects",
                         "schema": {
                             "$ref": "#/definitions/views.ErrorResponse"
                         }
@@ -3472,47 +3535,6 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/database.Video"
                     }
-                }
-            }
-        },
-        "views.RProject": {
-            "type": "object",
-            "properties": {
-                "cover": {
-                    "$ref": "#/definitions/database.Image"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "director": {
-                    "type": "string"
-                },
-                "duration_in_mins": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "keywords": {
-                    "type": "string"
-                },
-                "producer": {
-                    "type": "string"
-                },
-                "release_year": {
-                    "type": "integer"
-                },
-                "title": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/database.Type"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },

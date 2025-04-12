@@ -36,7 +36,7 @@ func NewProjecsHandlers(repo *repositories.ProjectsRepository, dir string) *Proj
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
-// @Success      200  {array} views.RProject "OK"
+// @Success      200  {array} views.Project "OK"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
@@ -56,12 +56,114 @@ func (ph *ProjectsHandlers) GetAll(w http.ResponseWriter, r *http.Request, user 
 		return
 	}
 
-	idsArray := r.URL.Query()["genre_id"]
-	fmt.Println(idsArray)
+	// idsArray := r.URL.Query()["genre_id"]
+	// fmt.Println(idsArray)
 
 	projects, err := ph.repo.GetAll(r.Context())
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects", err)
+	}
+
+	views.RespondWithJSON(w, http.StatusOK, projects)
+}
+
+// GetAllSearchTerm godoc
+// @Tags Projects
+// @Summary      Get Projects List
+// @Accept       json
+// @Produce      json
+// @Param Authorization header string true "Bearer AccessToken"
+// @Success      200  {array} views.Project "OK"
+// @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
+// @Failure   	 403  {object} views.ErrorResponse "No Permission"
+// @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
+// @Failure   	 500  {object} views.ErrorResponse "Couldn't Get Projects"
+// @Router       /v1/projects/search [get]
+// @Security Bearer
+func (ph *ProjectsHandlers) GetAllSearch(w http.ResponseWriter, r *http.Request, user views.User) {
+	can_do := false
+	for _, role := range user.Roles {
+		if role.Projects >= 2 {
+			can_do = true
+			break
+		}
+	}
+	if !can_do {
+		views.RespondWithError(w, http.StatusForbidden, "don't have permission", errors.New("no Permission"))
+		return
+	}
+
+	// idsArray := r.URL.Query()["genre_id"]
+	// fmt.Println(idsArray)
+	searchTerm := r.URL.Query().Get("searchTerm")
+	idsArray := r.URL.Query()["genre_id"]
+
+	if searchTerm == "" && len(idsArray) == 0 {
+		views.RespondWithJSON(w, http.StatusOK, []views.Project{})
+		return
+	}
+
+	ids := []int64{}
+	for _, genre_id := range idsArray {
+		id, err := strconv.Atoi(genre_id)
+		if err != nil {
+			views.RespondWithError(w, http.StatusBadRequest, "wrong genre_id", err)
+			return
+		}
+		ids = append(ids, int64(id))
+	}
+
+	if searchTerm == "" && len(ids) != 0 {
+		dProjects, err := ph.repo.DB.GetProjectsOfGenrers(r.Context(), ids)
+		if err != nil {
+			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects of genres", err)
+			return
+		}
+		projects, err := ph.repo.DatabaseProjects2viewsProjects(r.Context(), dProjects)
+		if err != nil {
+			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't convert database projects to views projects", err)
+			return
+		}
+		views.RespondWithJSON(w, http.StatusOK, projects)
+		return
+	}
+
+	if searchTerm != "" && len(idsArray) == 0 {
+		dProjects, err := ph.repo.DB.GetProjectsSearch(r.Context(), database.GetProjectsSearchParams{
+			LOWER:   searchTerm,
+			LOWER_2: searchTerm,
+			LOWER_3: searchTerm,
+		})
+		if err != nil {
+			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects of search term", err)
+			return
+		}
+		projects, err := ph.repo.DatabaseProjects2viewsProjects(r.Context(), dProjects)
+		if err != nil {
+			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't convert database projects to views projects", err)
+			return
+		}
+		views.RespondWithJSON(w, http.StatusOK, projects)
+		return
+	}
+
+	// var projects []views.RProject
+
+	dProjects, err := ph.repo.DB.GetProjectsOfGenresAndSearch(r.Context(), database.GetProjectsOfGenresAndSearchParams{
+		Ids:     ids,
+		LOWER:   searchTerm,
+		LOWER_2: searchTerm,
+		LOWER_3: searchTerm,
+	})
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects of search term and genres", err)
+		return
+	}
+
+	projects, err := ph.repo.DatabaseProjects2viewsProjects(r.Context(), dProjects)
+	if err != nil {
+		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't convert database projects to views projects", err)
+		return
 	}
 
 	views.RespondWithJSON(w, http.StatusOK, projects)

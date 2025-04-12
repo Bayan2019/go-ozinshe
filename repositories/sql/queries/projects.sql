@@ -2,14 +2,14 @@
 SELECT * FROM projects;
 --
 
--- name: GetProjectsOfGenders :many
+-- name: GetProjectsOfGenrers :many
 SELECT p.* FROM projects AS p
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
 WHERE pg.genre_id IN (sqlc.slice('ids'));
 --
 
--- name: GetProjectsOfGendersAndSearch :many
+-- name: GetProjectsOfGenresAndSearch :many
 SELECT p.* FROM projects AS p
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
