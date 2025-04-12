@@ -73,6 +73,8 @@ func (ph *ProjectsHandlers) GetAll(w http.ResponseWriter, r *http.Request, user 
 // @Accept       json
 // @Produce      json
 // @Param Authorization header string true "Bearer AccessToken"
+// @Param searchTerm query string false "Search Term"
+// @Param genre_id query []string false "Genre Ids" collectionFormat(multi)
 // @Success      200  {array} views.Project "OK"
 // @Failure   	 401  {object} views.ErrorResponse "No token Middleware"
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"

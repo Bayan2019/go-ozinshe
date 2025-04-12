@@ -1385,6 +1385,22 @@ const docTemplate = `{
                         "name": "Authorization",
                         "in": "header",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search Term",
+                        "name": "searchTerm",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        },
+                        "collectionFormat": "multi",
+                        "description": "Genre Ids",
+                        "name": "genre_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {

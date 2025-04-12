@@ -1407,6 +1407,17 @@ paths:
         name: Authorization
         required: true
         type: string
+      - description: Search Term
+        in: query
+        name: searchTerm
+        type: string
+      - collectionFormat: multi
+        description: Genre Ids
+        in: query
+        items:
+          type: string
+        name: genre_id
+        type: array
       produces:
       - application/json
       responses:
