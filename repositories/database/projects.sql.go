@@ -374,9 +374,9 @@ func (q *Queries) GetProjectsOfType(ctx context.Context, typeID int64) ([]Projec
 const getProjectsSearch = `-- name: GetProjectsSearch :many
 
 SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects
-WHERE ((title LIKE ?1) 
-        OR (description LIKE ?1)
-        OR (keywords LIKE ?1))
+WHERE ((LOWER(title) LIKE ?1) 
+        OR (LOWER(description) LIKE ?1)
+        OR (LOWER(keywords) LIKE ?1))
 `
 
 func (q *Queries) GetProjectsSearch(ctx context.Context, search string) ([]Project, error) {
