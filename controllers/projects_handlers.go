@@ -131,7 +131,7 @@ func (ph *ProjectsHandlers) GetAllSearch(w http.ResponseWriter, r *http.Request,
 	}
 
 	if searchTerm != "" && len(idsArray) == 0 {
-
+		// err = ph.repo.DB.
 		dProjects, err := ph.repo.DB.GetProjectsSearch(r.Context(), database.GetProjectsSearchParams{
 			Column1: searchTerm,
 			Column2: searchTerm,
