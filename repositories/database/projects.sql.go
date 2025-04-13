@@ -374,12 +374,12 @@ func (q *Queries) GetProjectsOfType(ctx context.Context, typeID int64) ([]Projec
 const getProjectsSearch = `-- name: GetProjectsSearch :many
 
 SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects
-WHERE ((title LIKE ('%' + ?1 + '%')) 
-        OR (description LIKE ('%' + ?1 + '%'))
-        OR (keywords LIKE ('%' + ?1 + '%')))
+WHERE ((title LIKE ?1) 
+        OR (description LIKE ?1)
+        OR (keywords LIKE ?1))
 `
 
-func (q *Queries) GetProjectsSearch(ctx context.Context, search interface{}) ([]Project, error) {
+func (q *Queries) GetProjectsSearch(ctx context.Context, search string) ([]Project, error) {
 	rows, err := q.db.QueryContext(ctx, getProjectsSearch, search)
 	if err != nil {
 		return nil, err

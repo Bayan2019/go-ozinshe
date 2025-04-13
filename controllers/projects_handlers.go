@@ -132,6 +132,7 @@ func (ph *ProjectsHandlers) GetAllSearch(w http.ResponseWriter, r *http.Request,
 
 	if searchTerm != "" && len(idsArray) == 0 {
 		// err = ph.repo.DB.
+		searchTerm = "%" + searchTerm + "%"
 		dProjects, err := ph.repo.DB.GetProjectsSearch(r.Context(), searchTerm)
 		if err != nil {
 			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects of search term", err)

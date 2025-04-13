@@ -25,9 +25,9 @@ WHERE pg.genre_id IN (sqlc.slice('ids'))
 
 -- name: GetProjectsSearch :many
 SELECT * FROM projects
-WHERE ((title LIKE ('%' + @search + '%')) 
-        OR (description LIKE ('%' + @search + '%'))
-        OR (keywords LIKE ('%' + @search + '%')));
+WHERE ((title LIKE @search) 
+        OR (description LIKE @search)
+        OR (keywords LIKE @search));
 --
 
 -- name: GetProjectById :one
