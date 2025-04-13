@@ -268,16 +268,16 @@ SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.du
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
 WHERE pg.genre_id IN (/*SLICE:ids*/?) 
-    AND ((LOWER(p.title) LIKE '%' + LOWER(?) + '%') 
-        OR (LOWER(p.description) LIKE '%' + LOWER(?) + '%')
-        OR (LOWER(p.keywords) LIKE '%' + LOWER(?) + '%'))
+    AND ((p.title LIKE '%' + ? + '%') 
+        OR (p.description LIKE '%' + ? + '%')
+        OR (p.keywords LIKE '%' + ? + '%'))
 `
 
 type GetProjectsOfGenresAndSearchParams struct {
 	Ids     []int64
-	LOWER   string
-	LOWER_2 string
-	LOWER_3 string
+	Column2 interface{}
+	Column3 interface{}
+	Column4 interface{}
 }
 
 func (q *Queries) GetProjectsOfGenresAndSearch(ctx context.Context, arg GetProjectsOfGenresAndSearchParams) ([]Project, error) {
@@ -291,9 +291,9 @@ func (q *Queries) GetProjectsOfGenresAndSearch(ctx context.Context, arg GetProje
 	} else {
 		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
 	}
-	queryParams = append(queryParams, arg.LOWER)
-	queryParams = append(queryParams, arg.LOWER_2)
-	queryParams = append(queryParams, arg.LOWER_3)
+	queryParams = append(queryParams, arg.Column2)
+	queryParams = append(queryParams, arg.Column3)
+	queryParams = append(queryParams, arg.Column4)
 	rows, err := q.db.QueryContext(ctx, query, queryParams...)
 	if err != nil {
 		return nil, err
@@ -374,19 +374,19 @@ func (q *Queries) GetProjectsOfType(ctx context.Context, typeID int64) ([]Projec
 const getProjectsSearch = `-- name: GetProjectsSearch :many
 
 SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects
-WHERE ((LOWER(title) LIKE '%' + LOWER(?) + '%') 
-        OR (LOWER(description) LIKE '%' + LOWER(?) + '%')
-        OR (LOWER(keywords) LIKE '%' + LOWER(?) + '%'))
+WHERE ((title LIKE '%' + ? + '%') 
+        OR (description LIKE '%' + ? + '%')
+        OR (keywords LIKE '%' + ? + '%'))
 `
 
 type GetProjectsSearchParams struct {
-	LOWER   string
-	LOWER_2 string
-	LOWER_3 string
+	Column1 interface{}
+	Column2 interface{}
+	Column3 interface{}
 }
 
 func (q *Queries) GetProjectsSearch(ctx context.Context, arg GetProjectsSearchParams) ([]Project, error) {
-	rows, err := q.db.QueryContext(ctx, getProjectsSearch, arg.LOWER, arg.LOWER_2, arg.LOWER_3)
+	rows, err := q.db.QueryContext(ctx, getProjectsSearch, arg.Column1, arg.Column2, arg.Column3)
 	if err != nil {
 		return nil, err
 	}
