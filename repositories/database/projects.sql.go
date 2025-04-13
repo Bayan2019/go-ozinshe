@@ -264,22 +264,24 @@ func (q *Queries) GetProjectsOfGenrers(ctx context.Context, ids []int64) ([]Proj
 
 const getProjectsOfGenresAndSearch = `-- name: GetProjectsOfGenresAndSearch :many
 
+
 SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.duration_in_mins, p.release_year, p.director, p.producer, p.cover, p.keywords FROM projects AS p
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
 WHERE pg.genre_id IN (/*SLICE:ids*/?) 
-    AND ((p.title LIKE '%' + ? + '%') 
-        OR (p.description LIKE '%' + ? + '%')
-        OR (p.keywords LIKE '%' + ? + '%'))
+    AND ((p.title LIKE '%'+?2+'%') 
+        OR (p.description LIKE '%' + ?2 + '%')
+        OR (p.keywords LIKE '%' + ?2 + '%'))
 `
 
 type GetProjectsOfGenresAndSearchParams struct {
-	Ids     []int64
-	Column2 interface{}
-	Column3 interface{}
-	Column4 interface{}
+	Ids    []int64
+	Search interface{}
 }
 
+// -- name: PragmaCaseSensitiveOFF :exec
+// PRAGMA case_sensitive_like = OFF;
+// --
 func (q *Queries) GetProjectsOfGenresAndSearch(ctx context.Context, arg GetProjectsOfGenresAndSearchParams) ([]Project, error) {
 	query := getProjectsOfGenresAndSearch
 	var queryParams []interface{}
@@ -291,9 +293,7 @@ func (q *Queries) GetProjectsOfGenresAndSearch(ctx context.Context, arg GetProje
 	} else {
 		query = strings.Replace(query, "/*SLICE:ids*/?", "NULL", 1)
 	}
-	queryParams = append(queryParams, arg.Column2)
-	queryParams = append(queryParams, arg.Column3)
-	queryParams = append(queryParams, arg.Column4)
+	queryParams = append(queryParams, arg.Search)
 	rows, err := q.db.QueryContext(ctx, query, queryParams...)
 	if err != nil {
 		return nil, err
@@ -374,19 +374,13 @@ func (q *Queries) GetProjectsOfType(ctx context.Context, typeID int64) ([]Projec
 const getProjectsSearch = `-- name: GetProjectsSearch :many
 
 SELECT id, created_at, updated_at, title, description, type_id, duration_in_mins, release_year, director, producer, cover, keywords FROM projects
-WHERE ((title LIKE '%' + ? + '%') 
-        OR (description LIKE '%' + ? + '%')
-        OR (keywords LIKE '%' + ? + '%'))
+WHERE ((title LIKE '%' + ?1 + '%') 
+        OR (description LIKE '%' + ?1 + '%')
+        OR (keywords LIKE '%' + ?1 + '%'))
 `
 
-type GetProjectsSearchParams struct {
-	Column1 interface{}
-	Column2 interface{}
-	Column3 interface{}
-}
-
-func (q *Queries) GetProjectsSearch(ctx context.Context, arg GetProjectsSearchParams) ([]Project, error) {
-	rows, err := q.db.QueryContext(ctx, getProjectsSearch, arg.Column1, arg.Column2, arg.Column3)
+func (q *Queries) GetProjectsSearch(ctx context.Context, search interface{}) ([]Project, error) {
+	rows, err := q.db.QueryContext(ctx, getProjectsSearch, search)
 	if err != nil {
 		return nil, err
 	}

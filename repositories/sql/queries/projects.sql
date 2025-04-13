@@ -9,25 +9,25 @@ ON p.id = pg.project_id
 WHERE pg.genre_id IN (sqlc.slice('ids'));
 --
 
--- name: PragmaCaseSensitiveOFF :exec
-PRAGMA case_sensitive_like = OFF;
---
+-- -- name: PragmaCaseSensitiveOFF :exec
+-- PRAGMA case_sensitive_like = OFF;
+-- --
 
 -- name: GetProjectsOfGenresAndSearch :many
 SELECT p.* FROM projects AS p
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
 WHERE pg.genre_id IN (sqlc.slice('ids')) 
-    AND ((p.title LIKE '%' + ? + '%') 
-        OR (p.description LIKE '%' + ? + '%')
-        OR (p.keywords LIKE '%' + ? + '%'));
+    AND ((p.title LIKE '%'+@search+'%') 
+        OR (p.description LIKE '%' + @search + '%')
+        OR (p.keywords LIKE '%' + @search + '%'));
 --
 
 -- name: GetProjectsSearch :many
 SELECT * FROM projects
-WHERE ((title LIKE '%' + ? + '%') 
-        OR (description LIKE '%' + ? + '%')
-        OR (keywords LIKE '%' + ? + '%'));
+WHERE ((title LIKE '%' + @search + '%') 
+        OR (description LIKE '%' + @search + '%')
+        OR (keywords LIKE '%' + @search + '%'));
 --
 
 -- name: GetProjectById :one

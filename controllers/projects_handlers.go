@@ -132,11 +132,7 @@ func (ph *ProjectsHandlers) GetAllSearch(w http.ResponseWriter, r *http.Request,
 
 	if searchTerm != "" && len(idsArray) == 0 {
 		// err = ph.repo.DB.
-		dProjects, err := ph.repo.DB.GetProjectsSearch(r.Context(), database.GetProjectsSearchParams{
-			Column1: searchTerm,
-			Column2: searchTerm,
-			Column3: searchTerm,
-		})
+		dProjects, err := ph.repo.DB.GetProjectsSearch(r.Context(), searchTerm)
 		if err != nil {
 			views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects of search term", err)
 			return
@@ -153,10 +149,8 @@ func (ph *ProjectsHandlers) GetAllSearch(w http.ResponseWriter, r *http.Request,
 	// var projects []views.RProject
 
 	dProjects, err := ph.repo.DB.GetProjectsOfGenresAndSearch(r.Context(), database.GetProjectsOfGenresAndSearchParams{
-		Ids:     ids,
-		Column2: searchTerm,
-		Column3: searchTerm,
-		Column4: searchTerm,
+		Ids:    ids,
+		Search: searchTerm,
 	})
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects of search term and genres", err)
