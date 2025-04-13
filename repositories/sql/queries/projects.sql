@@ -18,9 +18,9 @@ SELECT p.* FROM projects AS p
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
 WHERE pg.genre_id IN (sqlc.slice('ids')) 
-    AND ((p.title LIKE '%'+@search+'%') 
-        OR (p.description LIKE '%' + @search + '%')
-        OR (p.keywords LIKE '%' + @search + '%'));
+    AND ((LOWER(p.title) LIKE LOWER(@search)) 
+        OR (LOWER(p.description) LIKE LOWER(@search))
+        OR (LOWER(p.keywords) LIKE LOWER(@search)));
 --
 
 -- name: GetProjectsSearch :many

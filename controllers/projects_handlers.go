@@ -149,6 +149,7 @@ func (ph *ProjectsHandlers) GetAllSearch(w http.ResponseWriter, r *http.Request,
 	}
 
 	// var projects []views.RProject
+	searchTerm = "%" + searchTerm + "%"
 
 	dProjects, err := ph.repo.DB.GetProjectsOfGenresAndSearch(r.Context(), database.GetProjectsOfGenresAndSearchParams{
 		Ids:    ids,

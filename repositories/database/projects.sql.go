@@ -269,14 +269,14 @@ SELECT p.id, p.created_at, p.updated_at, p.title, p.description, p.type_id, p.du
 JOIN projects_genres AS pg 
 ON p.id = pg.project_id
 WHERE pg.genre_id IN (/*SLICE:ids*/?) 
-    AND ((p.title LIKE '%'+?2+'%') 
-        OR (p.description LIKE '%' + ?2 + '%')
-        OR (p.keywords LIKE '%' + ?2 + '%'))
+    AND ((LOWER(p.title) LIKE LOWER(?2)) 
+        OR (LOWER(p.description) LIKE LOWER(?2))
+        OR (LOWER(p.keywords) LIKE LOWER(?2)))
 `
 
 type GetProjectsOfGenresAndSearchParams struct {
 	Ids    []int64
-	Search interface{}
+	Search string
 }
 
 // -- name: PragmaCaseSensitiveOFF :exec
