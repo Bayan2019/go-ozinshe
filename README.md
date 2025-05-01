@@ -17,3 +17,4 @@
 # Resources
 
 1. [svg to png](https://svgtopng.com/)
+2. [Database schema](https://www.dbdiagram.io/d/ozinshe-68132c1f1ca52373f5132a27)
