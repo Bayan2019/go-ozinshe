@@ -6,7 +6,6 @@ package database
 
 import (
 	"database/sql"
-	"time"
 )
 
 type AgeCategory struct {
@@ -99,7 +98,7 @@ type User struct {
 }
 
 type UsersRole struct {
-	AddedAt time.Time
+	AddedAt string
 	UserID  int64
 	RoleID  int64
 }
