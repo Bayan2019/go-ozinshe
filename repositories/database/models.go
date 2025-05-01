@@ -107,7 +107,7 @@ type UsersRole struct {
 type Video struct {
 	ID        string
 	CreatedAt string
-	UpdatedAt time.Time
+	UpdatedAt string
 	ProjectID int64
 	Season    int64
 	Serie     int64
