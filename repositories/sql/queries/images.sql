@@ -1,6 +1,6 @@
 -- name: AddImage2Movie :exec
-INSERT INTO images(id, project_id)
-VALUES (?, ?);
+INSERT INTO images(id, project_id, href)
+VALUES (?, ?, ?);
 --
 
 -- name: GetImage :one
@@ -20,7 +20,8 @@ SELECT * FROM images;
 -- name: UpdateImage :exec
 UPDATE images
 SET updated_at = CURRENT_DATE,
-    project_id = ?
+    project_id = ?,
+    href = ?
 WHERE id = ?;
 --
 

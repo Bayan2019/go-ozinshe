@@ -10,17 +10,18 @@ import (
 )
 
 const addImage2Movie = `-- name: AddImage2Movie :exec
-INSERT INTO images(id, project_id)
-VALUES (?, ?)
+INSERT INTO images(id, project_id, href)
+VALUES (?, ?, ?)
 `
 
 type AddImage2MovieParams struct {
 	ID        string
 	ProjectID int64
+	Href      string
 }
 
 func (q *Queries) AddImage2Movie(ctx context.Context, arg AddImage2MovieParams) error {
-	_, err := q.db.ExecContext(ctx, addImage2Movie, arg.ID, arg.ProjectID)
+	_, err := q.db.ExecContext(ctx, addImage2Movie, arg.ID, arg.ProjectID, arg.Href)
 	return err
 }
 
@@ -36,7 +37,7 @@ func (q *Queries) DeleteImage(ctx context.Context, id string) error {
 
 const getImage = `-- name: GetImage :one
 
-SELECT id, created_at, updated_at, project_id FROM images
+SELECT id, created_at, updated_at, project_id, href FROM images
 WHERE id = ?
 `
 
@@ -48,13 +49,14 @@ func (q *Queries) GetImage(ctx context.Context, id string) (Image, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ProjectID,
+		&i.Href,
 	)
 	return i, err
 }
 
 const getImages = `-- name: GetImages :many
 
-SELECT id, created_at, updated_at, project_id FROM images
+SELECT id, created_at, updated_at, project_id, href FROM images
 `
 
 func (q *Queries) GetImages(ctx context.Context) ([]Image, error) {
@@ -71,6 +73,7 @@ func (q *Queries) GetImages(ctx context.Context) ([]Image, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ProjectID,
+			&i.Href,
 		); err != nil {
 			return nil, err
 		}
@@ -87,7 +90,7 @@ func (q *Queries) GetImages(ctx context.Context) ([]Image, error) {
 
 const getImagesOfProject = `-- name: GetImagesOfProject :many
 
-SELECT id, created_at, updated_at, project_id FROM images
+SELECT id, created_at, updated_at, project_id, href FROM images
 WHERE project_id = ?
 `
 
@@ -105,6 +108,7 @@ func (q *Queries) GetImagesOfProject(ctx context.Context, projectID int64) ([]Im
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ProjectID,
+			&i.Href,
 		); err != nil {
 			return nil, err
 		}
@@ -123,16 +127,18 @@ const updateImage = `-- name: UpdateImage :exec
 
 UPDATE images
 SET updated_at = CURRENT_DATE,
-    project_id = ?
+    project_id = ?,
+    href = ?
 WHERE id = ?
 `
 
 type UpdateImageParams struct {
 	ProjectID int64
+	Href      string
 	ID        string
 }
 
 func (q *Queries) UpdateImage(ctx context.Context, arg UpdateImageParams) error {
-	_, err := q.db.ExecContext(ctx, updateImage, arg.ProjectID, arg.ID)
+	_, err := q.db.ExecContext(ctx, updateImage, arg.ProjectID, arg.Href, arg.ID)
 	return err
 }

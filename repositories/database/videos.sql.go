@@ -10,24 +10,25 @@ import (
 )
 
 const addVideo2Movie = `-- name: AddVideo2Movie :exec
-INSERT INTO videos(id, project_id)
-VALUES (?, ?)
+INSERT INTO videos(id, project_id, href)
+VALUES (?, ?, ?)
 `
 
 type AddVideo2MovieParams struct {
 	ID        string
 	ProjectID int64
+	Href      string
 }
 
 func (q *Queries) AddVideo2Movie(ctx context.Context, arg AddVideo2MovieParams) error {
-	_, err := q.db.ExecContext(ctx, addVideo2Movie, arg.ID, arg.ProjectID)
+	_, err := q.db.ExecContext(ctx, addVideo2Movie, arg.ID, arg.ProjectID, arg.Href)
 	return err
 }
 
 const addVideo2Series = `-- name: AddVideo2Series :exec
 
-INSERT INTO videos(id, project_id, season, serie)
-VALUES (?, ?, ?, ?)
+INSERT INTO videos(id, project_id, season, serie, href)
+VALUES (?, ?, ?, ?, ?)
 `
 
 type AddVideo2SeriesParams struct {
@@ -35,6 +36,7 @@ type AddVideo2SeriesParams struct {
 	ProjectID int64
 	Season    int64
 	Serie     int64
+	Href      string
 }
 
 func (q *Queries) AddVideo2Series(ctx context.Context, arg AddVideo2SeriesParams) error {
@@ -43,6 +45,7 @@ func (q *Queries) AddVideo2Series(ctx context.Context, arg AddVideo2SeriesParams
 		arg.ProjectID,
 		arg.Season,
 		arg.Serie,
+		arg.Href,
 	)
 	return err
 }
@@ -59,7 +62,7 @@ func (q *Queries) DeleteVideo(ctx context.Context, id string) error {
 
 const getVideo = `-- name: GetVideo :one
 
-SELECT id, created_at, updated_at, project_id, season, serie FROM videos
+SELECT id, created_at, updated_at, project_id, season, serie, href FROM videos
 WHERE project_id = ? AND
     season = ? AND
     serie = ?
@@ -81,13 +84,14 @@ func (q *Queries) GetVideo(ctx context.Context, arg GetVideoParams) (Video, erro
 		&i.ProjectID,
 		&i.Season,
 		&i.Serie,
+		&i.Href,
 	)
 	return i, err
 }
 
 const getVideos = `-- name: GetVideos :many
 
-SELECT id, created_at, updated_at, project_id, season, serie FROM videos
+SELECT id, created_at, updated_at, project_id, season, serie, href FROM videos
 `
 
 func (q *Queries) GetVideos(ctx context.Context) ([]Video, error) {
@@ -106,6 +110,7 @@ func (q *Queries) GetVideos(ctx context.Context) ([]Video, error) {
 			&i.ProjectID,
 			&i.Season,
 			&i.Serie,
+			&i.Href,
 		); err != nil {
 			return nil, err
 		}
@@ -122,7 +127,7 @@ func (q *Queries) GetVideos(ctx context.Context) ([]Video, error) {
 
 const getVideosOfProject = `-- name: GetVideosOfProject :many
 
-SELECT id, created_at, updated_at, project_id, season, serie FROM videos
+SELECT id, created_at, updated_at, project_id, season, serie, href FROM videos
 WHERE project_id = ?
 `
 
@@ -142,6 +147,7 @@ func (q *Queries) GetVideosOfProject(ctx context.Context, projectID int64) ([]Vi
 			&i.ProjectID,
 			&i.Season,
 			&i.Serie,
+			&i.Href,
 		); err != nil {
 			return nil, err
 		}
@@ -162,7 +168,8 @@ UPDATE videos
 SET updated_at = CURRENT_DATE,
     project_id = ?,
     season = ?,
-    serie = ?
+    serie = ?,
+    href = ?
 WHERE id = ?
 `
 
@@ -170,6 +177,7 @@ type UpdateVideoParams struct {
 	ProjectID int64
 	Season    int64
 	Serie     int64
+	Href      string
 	ID        string
 }
 
@@ -178,6 +186,7 @@ func (q *Queries) UpdateVideo(ctx context.Context, arg UpdateVideoParams) error 
 		arg.ProjectID,
 		arg.Season,
 		arg.Serie,
+		arg.Href,
 		arg.ID,
 	)
 	return err

@@ -1,11 +1,11 @@
 -- name: AddVideo2Movie :exec
-INSERT INTO videos(id, project_id)
-VALUES (?, ?);
+INSERT INTO videos(id, project_id, href)
+VALUES (?, ?, ?);
 --
 
 -- name: AddVideo2Series :exec
-INSERT INTO videos(id, project_id, season, serie)
-VALUES (?, ?, ?, ?);
+INSERT INTO videos(id, project_id, season, serie, href)
+VALUES (?, ?, ?, ?, ?);
 --
 
 -- name: GetVideo :one
@@ -29,7 +29,8 @@ UPDATE videos
 SET updated_at = CURRENT_DATE,
     project_id = ?,
     season = ?,
-    serie = ?
+    serie = ?,
+    href = ?
 WHERE id = ?;
 --
 

@@ -29,6 +29,7 @@ type Image struct {
 	CreatedAt string
 	UpdatedAt string
 	ProjectID int64
+	Href      string
 }
 
 type Permission struct {
@@ -110,6 +111,7 @@ type Video struct {
 	ProjectID int64
 	Season    int64
 	Serie     int64
+	Href      string
 }
 
 type Watchlist struct {
