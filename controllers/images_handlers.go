@@ -41,7 +41,7 @@ func NewImagesHandlers(db *database.Queries, dir string) *ImagesHandlers {
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "No Permission" "Couldn't get User Middleware"
-// @Router       /v1/projects/images/show/{id} [get]
+// @Router       /v1/projects/images/files/show/{id} [get]
 // @Security Bearer
 func (ih *ImagesHandlers) Display(w http.ResponseWriter, r *http.Request, user views.User) {
 	can_do := false
@@ -77,7 +77,7 @@ func (ih *ImagesHandlers) Display(w http.ResponseWriter, r *http.Request, user v
 // @Failure   	 403  {object} views.ErrorResponse "No Permission"
 // @Failure   	 404  {object} views.ErrorResponse "Not found User Middleware"
 // @Failure   	 500  {object} views.ErrorResponse "can't read the image"
-// @Router       /v1/projects/images/{id} [get]
+// @Router       /v1/projects/images/files/{id} [get]
 // @Security Bearer
 func (ih *ImagesHandlers) Get(w http.ResponseWriter, r *http.Request, user views.User) {
 	can_do := false
@@ -180,9 +180,16 @@ func (ih *ImagesHandlers) Upload(w http.ResponseWriter, r *http.Request, user vi
 		return
 	}
 
+	href := r.FormValue("href")
+	// if err != nil {
+	// 	views.RespondWithError(w, http.StatusBadRequest, "Invalid href", err)
+	// 	return
+	// }
+
 	err = ih.DB.AddImage2Movie(r.Context(), database.AddImage2MovieParams{
 		ID:        fileName,
 		ProjectID: int64(project_id),
+		Href:      href,
 	})
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Error saving file", err)
