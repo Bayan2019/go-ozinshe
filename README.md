@@ -15,6 +15,10 @@
 
 [![Swagger](https://raw.githubusercontent.com/swagger-api/swagger.io/wordpress/images/assets/SW-logo-clr.png)](https://go-ozinshe.onrender.com/swagger/index.html)
 
+```bash
+swag init && ./scripts/buildprod.sh
+```
+
 ## DataBase
 
 [![ozinshe](./ozinshe.svg "Ozinshe DataBase")](https://www.dbdiagram.io/d/ozinshe-68132c1f1ca52373f5132a27)
