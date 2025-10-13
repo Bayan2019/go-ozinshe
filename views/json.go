@@ -2,6 +2,7 @@ package views
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 )
@@ -35,11 +36,13 @@ func RespondWithError(w http.ResponseWriter, code int, msg string, err error) {
 		log.Println(err)
 	}
 	if code > 499 {
-		log.Printf("Responding with 5XX error: %s: %s", msg, err.Error())
+		log.Printf("Responding with 5XX error: %s: %v", msg, err)
 	}
 
+	message := fmt.Sprintf("%s: %v", msg, err)
+
 	RespondWithJSON(w, code, ErrorResponse{
-		Error: msg,
+		Error: message,
 	})
 }
 
