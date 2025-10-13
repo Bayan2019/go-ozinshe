@@ -62,6 +62,7 @@ func (ph *ProjectsHandlers) GetAll(w http.ResponseWriter, r *http.Request, user 
 	projects, err := ph.repo.GetAll(r.Context())
 	if err != nil {
 		views.RespondWithError(w, http.StatusInternalServerError, "Couldn't get projects", err)
+		return
 	}
 
 	views.RespondWithJSON(w, http.StatusOK, projects)

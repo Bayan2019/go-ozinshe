@@ -1150,7 +1150,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/projects/images/show/{id}": {
+        "/v1/projects/images/files/show/{id}": {
             "get": {
                 "security": [
                     {
@@ -1220,7 +1220,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/projects/images/{id}": {
+        "/v1/projects/images/files/{id}": {
             "get": {
                 "security": [
                     {
@@ -1288,7 +1288,9 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
+            }
+        },
+        "/v1/projects/images/{id}": {
             "delete": {
                 "security": [
                     {
@@ -3293,6 +3295,9 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "href": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -3348,6 +3353,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "createdAt": {
+                    "type": "string"
+                },
+                "href": {
                     "type": "string"
                 },
                 "id": {

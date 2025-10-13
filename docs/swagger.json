@@ -1144,7 +1144,7 @@
                 }
             }
         },
-        "/v1/projects/images/show/{id}": {
+        "/v1/projects/images/files/show/{id}": {
             "get": {
                 "security": [
                     {
@@ -1214,7 +1214,7 @@
                 }
             }
         },
-        "/v1/projects/images/{id}": {
+        "/v1/projects/images/files/{id}": {
             "get": {
                 "security": [
                     {
@@ -1282,7 +1282,9 @@
                         }
                     }
                 }
-            },
+            }
+        },
+        "/v1/projects/images/{id}": {
             "delete": {
                 "security": [
                     {
@@ -3287,6 +3289,9 @@
                 "createdAt": {
                     "type": "string"
                 },
+                "href": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -3342,6 +3347,9 @@
             "type": "object",
             "properties": {
                 "createdAt": {
+                    "type": "string"
+                },
+                "href": {
                     "type": "string"
                 },
                 "id": {

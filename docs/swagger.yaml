@@ -18,6 +18,8 @@ definitions:
     properties:
       createdAt:
         type: string
+      href:
+        type: string
       id:
         type: string
       projectID:
@@ -54,6 +56,8 @@ definitions:
   database.Video:
     properties:
       createdAt:
+        type: string
+      href:
         type: string
       id:
         type: string
@@ -1308,6 +1312,7 @@ paths:
       summary: Delete Image
       tags:
       - Images
+  /v1/projects/images/files/{id}:
     get:
       consumes:
       - application/json
@@ -1352,7 +1357,7 @@ paths:
       summary: Get Image
       tags:
       - Images
-  /v1/projects/images/show/{id}:
+  /v1/projects/images/files/show/{id}:
     get:
       consumes:
       - application/json
