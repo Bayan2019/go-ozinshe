@@ -282,7 +282,7 @@ func (pr *ProjectsRepository) DatabaseProjects2viewsProjects(ctx context.Context
 	for _, p := range dprojects {
 		vProject, err := pr.DatabaseProject2viewsProject(ctx, p)
 		if err != nil {
-			return vProjects, err
+			return vProjects, fmt.Errorf("couldn't transform the project: %v", err)
 		}
 		vProjects = append(vProjects, vProject)
 	}
