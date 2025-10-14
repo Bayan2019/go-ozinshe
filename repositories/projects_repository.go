@@ -36,7 +36,7 @@ func (pr *ProjectsRepository) GetAll(ctx context.Context) ([]views.Project, erro
 
 	projects, err := pr.DatabaseProjects2viewsProjects(ctx, dProjects)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("couldn't transform projects: %v", err)
 	}
 
 	// projects := []views.Project{}
