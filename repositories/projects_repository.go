@@ -209,15 +209,15 @@ func (pr *ProjectsRepository) UploadCover(ctx context.Context, project int64, co
 
 func (pr *ProjectsRepository) DatabaseProject2viewsProject(ctx context.Context, dProject database.Project) (views.Project, error) {
 	vProject := views.Project{}
-	tx, err := pr.Conn.Begin()
-	if err != nil {
-		return vProject, fmt.Errorf("couldn't make transaction: %v", err)
-	}
-	defer tx.Rollback()
+	// tx, err := pr.Conn.Begin()
+	// if err != nil {
+	// 	return vProject, fmt.Errorf("couldn't make transaction: %v", err)
+	// }
+	// defer tx.Rollback()
 
-	qtx := pr.DB.WithTx(tx)
+	// qtx := pr.DB.WithTx(tx)
 
-	typ, err := qtx.GetTypeById(ctx, dProject.TypeID)
+	typ, err := pr.DB.GetTypeById(ctx, dProject.TypeID)
 	if err != nil {
 		return vProject, fmt.Errorf("couldn't get type of the project: %v", err)
 	}
@@ -225,32 +225,32 @@ func (pr *ProjectsRepository) DatabaseProject2viewsProject(ctx context.Context, 
 
 	// var image database.Image
 	if dProject.Cover.Valid {
-		image, err := qtx.GetImage(ctx, dProject.Cover.String)
+		image, err := pr.DB.GetImage(ctx, dProject.Cover.String)
 		if err != nil {
 			return vProject, fmt.Errorf("couldn't get cover of the project: %v", err)
 		}
 		vProject.Cover = image
 	}
 
-	genres, err := qtx.GetAllGenresOfProject(ctx, dProject.ID)
+	genres, err := pr.DB.GetAllGenresOfProject(ctx, dProject.ID)
 	if err != nil {
 		return vProject, fmt.Errorf("couldn't get genres of the project: %v", err)
 	}
 	vProject.Genres = genres
 
-	ageCategories, err := qtx.GetAllAgeCategoriesOfProject(ctx, dProject.ID)
+	ageCategories, err := pr.DB.GetAllAgeCategoriesOfProject(ctx, dProject.ID)
 	if err != nil {
 		return vProject, fmt.Errorf("couldn't get categories of the project: %v", err)
 	}
 	vProject.AgeCategories = ageCategories
 
-	images, err := qtx.GetImagesOfProject(ctx, dProject.ID)
+	images, err := pr.DB.GetImagesOfProject(ctx, dProject.ID)
 	if err != nil {
 		return vProject, fmt.Errorf("couldn't get images of the project: %v", err)
 	}
 	vProject.Images = images
 
-	videos, err := qtx.GetVideosOfProject(ctx, dProject.ID)
+	videos, err := pr.DB.GetVideosOfProject(ctx, dProject.ID)
 	if err != nil {
 		return vProject, fmt.Errorf("couldn't get videos of the project: %v", err)
 	}
@@ -267,7 +267,7 @@ func (pr *ProjectsRepository) DatabaseProject2viewsProject(ctx context.Context, 
 	vProject.Producer = dProject.Producer
 	vProject.Keywords = dProject.Keywords
 
-	return vProject, tx.Commit()
+	return vProject, nil
 }
 
 func (pr *ProjectsRepository) DatabaseProjects2viewsProjects(ctx context.Context, dprojects []database.Project) ([]views.Project, error) {
