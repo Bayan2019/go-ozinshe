@@ -199,11 +199,19 @@ func (pr *ProjectsRepository) UploadCover(ctx context.Context, project int64, co
 	return tx.Commit()
 }
 
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+////// accommodating functions
+
 func (pr *ProjectsRepository) DatabaseProject2viewsProject(ctx context.Context, dProject database.Project) (views.Project, error) {
 	vProject := views.Project{}
 	tx, err := pr.Conn.Begin()
 	if err != nil {
-		return vProject, err
+		return vProject, fmt.Errorf("couldn't make transaction: %v", err)
 	}
 	defer tx.Rollback()
 
@@ -211,7 +219,7 @@ func (pr *ProjectsRepository) DatabaseProject2viewsProject(ctx context.Context, 
 
 	typ, err := qtx.GetTypeById(ctx, dProject.TypeID)
 	if err != nil {
-		return vProject, err
+		return vProject, fmt.Errorf("couldn't get type of the project: %v", err)
 	}
 	vProject.Type = typ
 
@@ -219,32 +227,32 @@ func (pr *ProjectsRepository) DatabaseProject2viewsProject(ctx context.Context, 
 	if dProject.Cover.Valid {
 		image, err := qtx.GetImage(ctx, dProject.Cover.String)
 		if err != nil {
-			return vProject, err
+			return vProject, fmt.Errorf("couldn't get cover of the project: %v", err)
 		}
 		vProject.Cover = image
 	}
 
 	genres, err := qtx.GetAllGenresOfProject(ctx, dProject.ID)
 	if err != nil {
-		return vProject, err
+		return vProject, fmt.Errorf("couldn't get genres of the project: %v", err)
 	}
 	vProject.Genres = genres
 
-	ageCategories, err := pr.DB.GetAllAgeCategoriesOfProject(ctx, dProject.ID)
+	ageCategories, err := qtx.GetAllAgeCategoriesOfProject(ctx, dProject.ID)
 	if err != nil {
-		return vProject, err
+		return vProject, fmt.Errorf("couldn't get categories of the project: %v", err)
 	}
 	vProject.AgeCategories = ageCategories
 
-	images, err := pr.DB.GetImagesOfProject(ctx, dProject.ID)
+	images, err := qtx.GetImagesOfProject(ctx, dProject.ID)
 	if err != nil {
-		return vProject, err
+		return vProject, fmt.Errorf("couldn't get images of the project: %v", err)
 	}
 	vProject.Images = images
 
-	videos, err := pr.DB.GetVideosOfProject(ctx, dProject.ID)
+	videos, err := qtx.GetVideosOfProject(ctx, dProject.ID)
 	if err != nil {
-		return vProject, err
+		return vProject, fmt.Errorf("couldn't get videos of the project: %v", err)
 	}
 	vProject.Videos = videos
 
@@ -265,7 +273,7 @@ func (pr *ProjectsRepository) DatabaseProject2viewsProject(ctx context.Context, 
 func (pr *ProjectsRepository) DatabaseProjects2viewsProjects(ctx context.Context, dprojects []database.Project) ([]views.Project, error) {
 	tx, err := pr.Conn.Begin()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("couldn't make transaction: %v", err)
 	}
 	defer tx.Rollback()
 
