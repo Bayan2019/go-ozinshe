@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/Bayan2019/go-ozinshe/repositories/database"
 	"github.com/Bayan2019/go-ozinshe/views"
@@ -30,7 +31,7 @@ func (pr *ProjectsRepository) GetAll(ctx context.Context) ([]views.Project, erro
 
 	dProjects, err := qtx.GetProjects(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("couldn't get projects: %v", err)
 	}
 
 	projects, err := pr.DatabaseProjects2viewsProjects(ctx, dProjects)
