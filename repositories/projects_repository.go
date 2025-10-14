@@ -24,7 +24,7 @@ func NewProjectsRepository(db *sql.DB) *ProjectsRepository {
 func (pr *ProjectsRepository) GetAll(ctx context.Context) ([]views.Project, error) {
 	tx, err := pr.Conn.Begin()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("couldn't create transaction: %v", err)
 	}
 	defer tx.Rollback()
 	qtx := pr.DB.WithTx(tx)
