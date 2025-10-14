@@ -271,11 +271,11 @@ func (pr *ProjectsRepository) DatabaseProject2viewsProject(ctx context.Context, 
 }
 
 func (pr *ProjectsRepository) DatabaseProjects2viewsProjects(ctx context.Context, dprojects []database.Project) ([]views.Project, error) {
-	tx, err := pr.Conn.Begin()
-	if err != nil {
-		return nil, fmt.Errorf("couldn't make transaction: %v", err)
-	}
-	defer tx.Rollback()
+	// tx, err := pr.Conn.Begin()
+	// if err != nil {
+	// 	return nil, fmt.Errorf("couldn't make transaction: %v", err)
+	// }
+	// defer tx.Rollback()
 
 	// qtx := pr.DB.WithTx(tx)
 	vProjects := []views.Project{}
@@ -286,5 +286,5 @@ func (pr *ProjectsRepository) DatabaseProjects2viewsProjects(ctx context.Context
 		}
 		vProjects = append(vProjects, vProject)
 	}
-	return vProjects, tx.Commit()
+	return vProjects, nil
 }
